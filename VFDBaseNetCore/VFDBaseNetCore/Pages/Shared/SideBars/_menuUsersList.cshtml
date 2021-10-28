@@ -1,0 +1,226 @@
+﻿@model MTF.Areas.Identity.Pages.SURoom.CommonUsersListModel
+
+@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+}
+<form class="form-inline mx-1" name="searchCaption-ulv" id="searchCaption-ulv"
+      asp-page="./CommonUsersList" method="get">
+    <!--  fictive input to pass values to get handlers -->
+    <input type="hidden" asp-for="@Model._invariants.CurrentPageSize"
+           name="pageSize" , id="pageSize" />
+    <input type="hidden" asp-for="@Model._invariants.PageIndex"
+           name="pageIndex" , id="pageIndex" />
+    <input type="hidden" asp-for="@Model._invariants.CurrentRole"
+           name="prevSearchRole" , id="prevSearchRole" />
+    <!--  fictive input to pass values to get handlers END -->
+    <span class="navbar-text mb-1 fas fa-search fa-lg"
+          style="cursor: pointer" onclick="_submit_searchString_ulv()">
+    </span>
+    <span class="navbar-text mb-2">Role:</span>
+    <select class="select-box mb-2" style="min-width: 100%" aria-label="Search"
+            name="searchRole" id="searchRole"
+            asp-for="@Model._invariants.CurrentRole" asp-items="@Model.AvailableRoles"
+            onchange="_submit_searchRole()">
+    </select>
+    <script>
+        function _submit_searchRole() {
+            var f = document.forms.namedItem("searchCaption-ulv").elements;
+            f.namedItem("pageIndex").value = 1;
+            document.forms.namedItem("searchCaption-ulv").submit();
+        }
+    </script>
+    <select class="select-box mb-2" style="min-width: 100%" aria-label="Search"
+            name="searchField" id="searchField"
+            asp-for="@Model._invariants.CurrentSearchField" asp-items="@Model.AvailableSearchFields"
+            onchange="_submit_searchField_ulv()">
+    </select>
+    <script>
+        function _submit_searchField_ulv() {
+            var f = document.forms.namedItem("searchCaption-ulv").elements;
+            f.namedItem("pageIndex").value = 1;
+            f.namedItem("searchString").value = "";
+            document.forms.namedItem("searchCaption-ulv").submit();
+        }
+    </script>
+    <input class="select-box mb-2" style="min-width: 100%"
+           type="text" placeholder="Search @Model._invariants.CurrentSearchField"
+           aria-label="Search"
+           name="searchString" id="searchString"
+           value="@Model._invariants.CurrentFilter"
+           onchange="_submit_searchString_ulv()" />
+    <script>
+        function _submit_searchString_ulv() {
+            var f = document.forms.namedItem("searchCaption-ulv").elements;
+            f.namedItem("pageIndex").value = 1;
+            document.forms.namedItem("searchCaption-ulv").submit();
+        }
+    </script>
+</form>
+
+<form class="form-inline mx-1" name="usersListOps" id="usersListOps"
+      asp-page="./CommonUsersList" method="post">
+    <input type="hidden" asp-for="@Model.op._op"
+           name="_op" , id="_op" />
+    <input type="hidden" asp-for="@Model.op._prm"
+           name="_prm" , id="_prm" />
+</form>
+
+<div class="mx-1">
+    <div class="my-2"></div>
+    @if (String.IsNullOrEmpty(GlobalParameters._systemClosedButSUS))
+    {
+    <button id="disconnectAll" class="btn btn-sm btn-primary mb-1" style="min-width: 100%;"
+            onclick="disconnectAllButSUS()">
+        Disconnect All (but SUS)
+    </button>
+    <button id="CloseSystem" class="btn btn-sm btn-primary mb-1" style="min-width: 100%;"
+            onclick="CloseSystemButSUS()">
+        Disable Logins (but SUS)
+    </button>
+    }
+    else
+    {
+    <button id="CloseSystem" class="btn btn-sm btn-primary mb-1" style="min-width: 100%;"
+            onclick="OpenSystem()">
+        ENABLE Logins
+    </button>
+    <button id="CloseSystem" class="btn btn-sm btn-primary mb-1" style="min-width: 100%;"
+            onclick="ChangeMessage()">
+        Change Blocking Message
+    </button>
+    }
+    <div class="my-2"></div>
+    <button id="setAnnouncement" class="btn btn-sm btn-primary mb-1" style="min-width: 100%;"
+            onclick="setAnnouncement()">
+        Set Announcement
+    </button>
+    <button id="disableAnnouncement" class="btn btn-sm btn-primary mb-1" style="min-width: 100%;"
+            onclick="disableAnnouncement()">
+        Disable Announcement
+    </button>
+    <div class="my-2"></div>
+    <button id="sendEmail" class="btn btn-sm btn-primary mb-1" style="min-width: 100%;"
+            onclick="sendEmails()">
+        Email to All Visible
+    </button>
+</div>
+
+<ul class="sidenav-menu">
+    <li class="sidenav-item">
+        <a class="sidenav-link active ps-2"
+           asp-area="Identity" asp-page="/Account/Register">
+            <i class="fas fa-user-plus fa-fw me-2"></i>
+            <span>Add User</span>
+        </a>
+    </li>
+</ul>
+
+<script type="text/javascript">
+
+    function disconnectAllButSUS() {
+        opnModalYNSimple(
+            "Do you really want to disconnect all users?",
+            "disconnectAll",
+            "Disconnection"
+        );
+    };
+
+    function disconnectAllSimpleYes() {
+        var f = document.forms.namedItem("usersListOps").elements;
+        f.namedItem("_op").value = "_disconnectAllButSUS";
+        document.forms.namedItem("usersListOps").submit();
+    };
+
+    function CloseSystemButSUS() {
+        opnModalYN("Users' Logins",
+            "Do you want to disable ordinal users' logins?",
+            "",
+            "CloseSystemButSUS",
+            10,
+            "Enter a message for users");
+    };
+
+    function CloseSystemButSUSYes(resType, resVal) {
+        var f = document.forms.namedItem("usersListOps").elements;
+        f.namedItem("_op").value = "_CloseSystemButSUS";
+        f.namedItem("_prm").value = resVal;
+        document.forms.namedItem("usersListOps").submit();
+    };
+
+    function ChangeMessage() {
+        opnModalYN("Users' Logins",
+            "Do you want to change blocking message?",
+            "@GlobalParameters._systemClosedButSUS",
+            "ChangeMessage",
+            10,
+            "@GlobalParameters._systemClosedButSUS");
+    };
+
+    function ChangeMessageYes(resType, resVal) {
+        var f = document.forms.namedItem("usersListOps").elements;
+        f.namedItem("_op").value = "_ChangeMessage";
+        f.namedItem("_prm").value = resVal;
+        document.forms.namedItem("usersListOps").submit();
+    };
+
+    function OpenSystem() {
+        opnModalYNSimple(
+            "Do you really want to allow user logins?",
+            "OpenSystem",
+            "Users' Logins"
+        );
+    };
+
+    function OpenSystemSimpleYes() {
+        var f = document.forms.namedItem("usersListOps").elements;
+        f.namedItem("_op").value = "_OpenSystem";
+        document.forms.namedItem("usersListOps").submit();
+    };
+    // =====
+    function setAnnouncement() {
+        opnModalYN("Users' Logins",
+            "Do you want to change announcement?",
+            "@Model._announcement",
+            "setAnnouncement",
+            10,
+            "@Model._announcement");
+    };
+
+    function setAnnouncementYes(resType, resVal) {
+        var f = document.forms.namedItem("usersListOps").elements;
+        f.namedItem("_op").value = "_ChangeAnnouncement";
+        f.namedItem("_prm").value = resVal;
+        document.forms.namedItem("usersListOps").submit();
+    };
+
+    function disableAnnouncement() {
+        opnModalYNSimple(
+            "Do you really want to disable announcement?",
+            "disableAnnouncement",
+            "Users' Logins"
+        );
+    };
+
+    function disableAnnouncementSimpleYes() {
+        var f = document.forms.namedItem("usersListOps").elements;
+        f.namedItem("_op").value = "_disableAnnouncement";
+        document.forms.namedItem("usersListOps").submit();
+    };
+
+    function sendEmails() {
+        opnModalYN("Send E-Mail to Users",
+            "Do you want to send a e-mail to all visible users?",
+            "",
+            "sendEmails",
+            10,
+            'Enter a e-mail body for users (you can use HTML markup as <div align=center style="color:red;font-size:40px;"><p></p></div>) and so on');
+    };
+
+    function sendEmailsYes(resType, resVal) {
+        var f = document.forms.namedItem("usersListOps").elements;
+        f.namedItem("_op").value = "_emailSend";
+        f.namedItem("_prm").value = resVal;
+        document.forms.namedItem("usersListOps").submit();
+    };
+
+</script>

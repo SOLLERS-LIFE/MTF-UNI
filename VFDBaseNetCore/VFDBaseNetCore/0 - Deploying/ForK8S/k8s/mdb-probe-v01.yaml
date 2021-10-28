@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: stores-probe
+  name: stores-probe
+  namespace: sole-common
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+      #nodePort: 31950
+  selector:
+    app: stores-probe
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: stores-probe
+  namespace: sole-common
+  labels:
+    name: stores-probe
+    app: stores-probe
+spec:
+  serviceName: stores-probe
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stores-probe
+  updateStrategy:
+    type: OnDelete
+  template:
+    metadata:
+      labels:
+        app: stores-probe
+    spec:
+      containers:
+      - name: stores-probe
+        image: bosun-01.sollers-sftdev.lab:5000/mdb-probe:latest
+        imagePullPolicy: Always
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 10; done;" ]
+        volumeMounts:
+        - name: secundo
+          mountPath: /bitnami/mariadb
+          readOnly: false
+      volumes:
+      - name: secundo
+        persistentVolumeClaim:
+          claimName: data-stores-sollers-secondary-0

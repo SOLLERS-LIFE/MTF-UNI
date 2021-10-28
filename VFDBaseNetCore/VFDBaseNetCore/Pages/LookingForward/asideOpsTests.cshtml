@@ -1,0 +1,187 @@
+﻿@page
+@model MTF.Pages.asideOpsTestsModel
+@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+
+    var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+}
+
+<div class="container-fluid mt-2">
+    <partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+    <button class="btn btn-primary mb-2" onclick="sbmReqCnt()">Switch off NavBars</button>
+    <script type="text/javascript">
+        function sbmReqCnt() {
+            var ref = '/LookingForward/asideOpsTests?reqcontent=Yes';
+            window.location.href = ref;
+        };
+    </script>
+</div>
+
+<!-- aside processing facility -->
+@Html.AntiForgeryToken()
+<div class="container-fluid mt-2">
+    <button class="btn btn-primary mb-2"
+            onclick="sbmReqFileAsync('getPageHTML',document.getElementsByTagName('html')[0].innerHTML,'application/text','pageHTML.txt')">
+        Request Page HTML
+    </button>
+    <button class="btn btn-primary mb-2"
+            onclick="sbmReqFileAsync('getReportExample','','application/pdf','ReportExample.pdf')">
+        Request Report
+    </button>
+    <div id="dnldSpinner" class="d-inline-flex justify-content-start align-items-center d-none ms-2">
+        <div class="spinner-grow text-info me-2" style="width: 3em; height: 2em;" role="status"></div>
+        <strong class="text-info">We are preparing your report...</strong>
+    </div>
+    <div id="statusAsideOp" class="mb-2"></div>
+    <iframe id="if_downloader" title="downloader" class="d-none" src=""></iframe>
+
+    <script type="text/javascript">
+        function sbmReqFileAsync(oper, prm, tp, dn) {
+            document.getElementById("dnldSpinner").classList.toggle("d-none");
+
+            formData = new FormData();
+            formData.append("op", oper);
+            formData.append("prm", prm)
+
+            var request = new XMLHttpRequest();
+            request.open("POST", "/LookingForward/asideOpsTests?handler=AsideOpsMngr", true);
+            request.setRequestHeader("X-XSRF-TOKEN", document.getElementsByName("__RequestVerificationToken")[0].value);
+            request.onreadystatechange = function (e) {
+                if (this.readyState === 4) {
+                    //alert(this.status + ' ' + this.statusText + ' ' + this.responseType + ' ' + this.responseText);
+                    if (this.status == 200) {
+                    };
+                };
+            };
+
+            request.addEventListener("load", function (event) {
+                document.getElementById("statusAsideOp").innerHTML = event.target.responseText;
+                getFromCacheNEW(event.target.responseText, tp, dn)
+                document.getElementById("dnldSpinner").classList.toggle("d-none");
+            });
+            request.addEventListener("error", function (e) {
+                document.getElementById("statusAsideOp").innerHTML = "Report Failed";
+            }, false);
+            request.addEventListener("abort", function (e) {
+                document.getElementById("statusAsideOp").innerHTML = "Report Aborted";
+            }, false);
+
+            request.timeout = 45000;
+            request.send(formData);
+
+            return false;
+        };
+    </script>
+    <script type="text/javascript">
+        function getFromCacheNEW(rt, tp, dn) {
+            const redk = JSON.parse(rt);
+            if (redk.status === "success") {
+                const path = "/Shared/SideOps/asideOps?handler=Baby&op=" + "getFromCache" + "&pf=" + redk.redisKey
+                    + "&tp=" + tp + "&dn=" + dn;
+                document.getElementById("if_downloader").src = path;
+            };
+        };
+    </script>
+
+    <!-- just the decoration how to call script after a page have been loaded completely -->
+    <script type="text/javascript">
+        var interval = setInterval(function () {
+            if (document.readyState === 'complete') {
+                clearInterval(interval);
+                if (true) {
+                };
+            }
+        }, 100);
+    </script>
+</div>
+<!-- aside processing facility END -->
+<hr class="bg-white border-5 border-top border-white">
+<!-- upload operations facility -->
+<div class="container-fluid">
+    <div class="d-inline-flex ">
+        <div class="flex-row mb-2">
+            <label for="uploadNames" class="btn bg-primary">
+                <i class="fas fa-cloud-upload-alt fa-fw me-1"></i>Browse
+            </label>
+            <input id="uploadNames" type="file" onchange="setFN(this.files[0].name)" />
+            <button id="uploadBtn" class="btn btn-primary"
+                    onclick="upldOps('uploadToRedis')">
+                Upload To Redis
+            </button>
+            <script type="text/javascript">
+                function setFN(fn) {
+                    document.getElementById("fileName").innerHTML = fn;
+                }
+            </script>
+        </div>
+    </div>
+    <div class="d-flex">
+        <div class="flex-column">
+            <div id="fileName" class="mb-2"></div>
+            <div class="d-inline-flex mb-2">
+                <label for="progressBar" class="me-2">Progress:</label>
+                <progress id="progressBar" class="" style="height: 1.5em" value="0" max="100"></progress>
+            </div>
+            <div id="status" class="mb-2"></div>
+            <div id="loaded_n_total" class="mb-2"></div>
+        </div>
+    </div>
+</div>
+@Html.AntiForgeryToken()
+<script type="text/javascript">
+    function upldOps(oper) {
+        var _files = document.getElementById("uploadNames").files;
+        if (_files.length!=1) {
+            alert("Please browse to choose a file for upload");
+            return;
+        }
+        formData = new FormData();
+        formData.append("Uploader", _files[0]);
+        formData.append("op", oper);
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "/Shared/SideOps/uploadOps?handler=Uploader", true);
+        request.setRequestHeader("X-XSRF-TOKEN", document.getElementsByName("__RequestVerificationToken")[0].value);
+        request.onreadystatechange = function () {
+            if (this.readyState === 4) {
+                //al_pageParamsrt(this.status + ' ' + this.statusText + ' ' + this.responseType + ' ' + this.responseText);
+            }
+        };
+
+        request.upload.addEventListener("progress", function (e) {
+            var percent = Math.round((event.loaded / event.total) * 100);
+            document.getElementById("progressBar").value = percent;
+            document.getElementById("status").innerHTML = percent + "% uploaded... please wait";
+            document.getElementById("loaded_n_total").innerHTML = "Uploaded " + event.loaded + " bytes of " + event.total;
+        }, false);
+
+        request.addEventListener("load", function (e) {
+            document.getElementById("progressBar").value = 0;
+            document.getElementById("status").innerHTML = event.target.responseText;
+            const redk = JSON.parse(event.target.responseText);
+            if (redk.status === "success") {
+                alert("Your object have been saved with key " + redk.redisKey);
+            };
+            if (redk.status === "fail") {
+                alert(redk.descr);
+            };
+
+        });
+
+        request.addEventListener("error", function (e) {
+            document.getElementById("progressBar").value = 0;
+            document.getElementById("status").innerHTML = "Upload Failed";
+        }, false);
+        request.addEventListener("abort", function (e) {
+            document.getElementById("progressBar").value = 0;
+            document.getElementById("status").innerHTML = "Upload Aborted";
+        }, false);
+
+        request.timeout = 10*60*1000;
+        request.send(formData);
+
+        return false;
+    };
+</script>
+<!-- upload operations facility END -->

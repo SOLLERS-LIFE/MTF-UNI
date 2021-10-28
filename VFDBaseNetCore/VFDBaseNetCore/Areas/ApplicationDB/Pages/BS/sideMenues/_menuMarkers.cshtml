@@ -1,0 +1,28 @@
+﻿@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+    var markAlias = MTF.GlobalParameters.MarkNameAlias;
+    var marksAlias = MTF.GlobalParameters.MarksNameAlias;
+    var bsAlias = MTF.GlobalParameters.BusinessStructureAlias;
+}
+<ul class="sidenav-menu">
+    @if (_lconsts.IsSignedIn)
+    {
+        <li class="sidenav-item border-bottom border-2 rounded-0">
+            <a class="sidenav-link active ps-2 pb-3"
+               asp-area="ApplicationDB" asp-page="/BS/index">
+                    <i class="fas fa-shield-alt fa-fw me-2"></i>
+                    <span>@bsAlias</span>
+            </a>
+        </li>
+        @if (_lconsts.isSU)
+        {
+            <!--li class="sidenav-item">
+                <a class="sidenav-link active ps-2"
+                   onclick="reqMarkName()">
+                    <i class="fas fa-tags fa-fw me-2"></i>
+                    <span>Add @markAlias</span>
+                </a>
+            </li-->
+        }
+    }
+</ul>

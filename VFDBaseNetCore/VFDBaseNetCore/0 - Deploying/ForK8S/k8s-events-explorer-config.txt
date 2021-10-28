@@ -1,0 +1,27 @@
+﻿config:
+  logFormat: pretty
+  logLevel: info
+  receivers:
+  - name: dump
+    webhook:
+      endpoint: http://mtf-production-webapi.sole-common.svc.cluster.local:80/logging/log
+      layout:
+        appIdent: k8s-events
+        callsite: '{{ .GetTimestampMs }}'
+        expn: '{{ .Reason }}'
+        level: '{{ .Type }}'
+        logger: '{{ .Source.Component }}'
+        machineName: '{{ .Source.Host }}'
+        message: '{{ .Message }}'
+        reqhost: '{{ .InvolvedObject.Kind }}'
+        uId: '{{ .InvolvedObject.Name }}'
+        url: '{{ .Namespace }}'
+  route:
+    routes:
+    - match:
+      - receiver: dump
+
+
+      NODEPORT=$(kubectl get -n sole-common -o jsonpath="{.spec.ports[0].nodePort}" services mtf-production)
+      NODES=$(kubectl get nodes -n sole-common -o jsonpath='{ $.items[*].status.addresses[?(@.type=="InternalIP")].address }')
+      for node in $NODES; do curl -s $node:$NODEPORT | grep -i client_address; done

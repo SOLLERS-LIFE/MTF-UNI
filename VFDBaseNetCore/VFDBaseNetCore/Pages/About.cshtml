@@ -1,0 +1,21 @@
+﻿@page
+@model MTF.Pages.About.AboutModel
+@{
+    var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var baseColor = MTF.GlobalParameters._baseColor;
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+@using (Html.BeginForm(pageName, "", FormMethod.Post,
+                    new { id = "pageForm", name = "pageForm" }
+                    )
+        )
+{
+    <div class="container-fluid">
+        <partial name="~/Pages/Shared/_underConstruction.cshtml" />    
+    </div>
+}
+
+<partial name="~/Pages/Shared/_CommonFooter.cshtml">

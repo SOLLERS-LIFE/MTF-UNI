@@ -1,0 +1,149 @@
+﻿@model MTF.Areas.Logging.Pages.EventsLogModel
+
+@{  var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var baseColor = MTF.GlobalParameters._baseColor;
+    var prevDisabled = !(@Model.pgParms.PageIndex > 1) ? "disabled-link text-muted" : "text-primary text-darken";
+    var nextDisabled = !(@Model.pgParms.PageIndex < Model.pgParms.TotalPages) ? "disabled-link text-muted" : "text-primary text-darken";
+
+    var invSortDirection = @Model.pgParms.SortDirection ?? "_desc";
+    invSortDirection = invSortDirection == "_desc" ? "_" : "_desc";
+
+    var gpaps = MTF.GlobalParameters.AvailablePageSizes;
+}
+
+<nav id="pageBarBottom" class="navbar navbar-expand fixed-bottom" style="z-index: 2048;">
+    <div class="container-fluid d-flex justify-content-between">
+        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#elcp-001"
+                aria-controls="elcp-001" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="fas fa-bars fa-lg"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="elcp-001">
+            <form class="form-inline text-black" name="searchFooter-eln" id="searchFooter-eln"
+                asp-page="./EventsLog" method="get">
+                <!--  fictive input to pass values to get handlers -->
+                <input type="hidden" asp-for="@Model.pgParms.CurrentSearchField"
+                        name="searchField" , id="searchField" />
+                <input type="hidden" asp-for="@Model.pgParms.WorkFlowId"
+                        name="workFlowId" , id="workFlowId" />
+                <input type="hidden" asp-for="@Model.pgParms.CurrentStartDate"
+                        name="startDate" , id="startDate" />
+                <input type="hidden" asp-for="@Model.pgParms.CurrentFilter"
+                        name="searchString" , id="searchString" />
+                <input type="hidden" asp-for="@Model.pgParms.CurrentSort"
+                        name="prevSortOrder" , id="prevSortOrder" />
+                <input type="hidden" asp-for="@Model.pgParms.CurrentSort"
+                        name="newSortOrder" , id="newSortOrder" />
+                <input type="hidden" asp-for="@invSortDirection"
+                        name="prevSortDirection" , id="prevSortDirection" />
+                <input type="hidden" asp-for="@Model.pgParms.CurrentStartDate"
+                        name="prevStartDate" , id="prevStartDate" />
+                <input type="hidden" asp-for="@Model.pgParms.PageIndex"
+                        name="pageIndex" , id="pageIndex" />
+                <!--  fictive input to pass values to get handlers END -->
+                <span class="text-th me-2">
+                    Page:
+                </span>
+                <input class="select-box-btm page-num text-end me-2"
+                        name="pageIndexA" id="pageIndexA"
+                        asp-for="@Model.pgParms.PageIndex" type="number" min="1" step="1" max="@Model.pgParms.TotalPages"
+                        onchange="_submit_pageIndexA()" />
+                <span class="text-th me-2">
+                    Of @Model.pgParms.TotalPages
+                </span>
+                <span class="text-th me-2">
+                    @Html.DisplayFor(model => Model.PagingNotification)
+                </span>
+                <span class="text-th me-1">
+                    by
+                </span>
+                <select class="select-box-btm me-2"
+                        name="pageSize" id="pageSize"
+                        asp-for="@Model.pgParms.CurrentPageSize" asp-items="@gpaps"
+                        onchange="_submit_pageSize_eln()">
+                </select>
+                <span class="text-th">
+                    p/p
+                </span>
+            </form>
+        </div>
+        <ul class="navbar-nav d-flex flex-row">
+            <li class="nav-item">
+                <a class="nav-link me-1 @prevDisabled" 
+                    asp-page="./EventsLog"
+                    asp-route-prevSortOrder="@Model.pgParms.CurrentSort"
+                    asp-route-newSortOrder="@Model.pgParms.CurrentSort"
+                    asp-route-prevSortDirection="@invSortDirection"
+                    asp-route-searchString="@Model.pgParms.CurrentFilter"
+                    asp-route-pageIndex="1"
+                    asp-route-pageSize="@Model.pgParms.CurrentPageSize"
+                    asp-route-workFlowId="@Model.pgParms.WorkFlowId"
+                    asp-route-searchField="@Model.pgParms.CurrentSearchField"
+                    asp-route-startDate="@Model.pgParms.CurrentStartDate"
+                    asp-route-prevStartDate="@Model.pgParms.CurrentStartDate">
+                    <span class="fas fa-fast-backward fa-lg "></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link me-1 @prevDisabled" 
+                    asp-page="./EventsLog"
+                    asp-route-prevSortOrder="@Model.pgParms.CurrentSort"
+                    asp-route-newSortOrder="@Model.pgParms.CurrentSort"
+                    asp-route-prevSortDirection="@invSortDirection"
+                    asp-route-searchString="@Model.pgParms.CurrentFilter"
+                    asp-route-pageIndex="@(Model.pgParms.PageIndex - 1)"
+                    asp-route-pageSize="@Model.pgParms.CurrentPageSize"
+                    asp-route-workFlowId="@Model.pgParms.WorkFlowId"
+                    asp-route-searchField="@Model.pgParms.CurrentSearchField"
+                    asp-route-startDate="@Model.pgParms.CurrentStartDate"
+                    asp-route-prevStartDate="@Model.pgParms.CurrentStartDate">
+                    <span class="fas fa-backward fa-lg "></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link me-1 @nextDisabled" 
+                    asp-page="./EventsLog"
+                    asp-route-prevSortOrder="@Model.pgParms.CurrentSort"
+                    asp-route-newSortOrder="@Model.pgParms.CurrentSort"
+                    asp-route-prevSortDirection="@invSortDirection"
+                    asp-route-searchString="@Model.pgParms.CurrentFilter"
+                    asp-route-pageIndex="@(Model.pgParms.PageIndex + 1)"
+                    asp-route-pageSize="@Model.pgParms.CurrentPageSize"
+                    asp-route-workFlowId="@Model.pgParms.WorkFlowId"
+                    asp-route-searchField="@Model.pgParms.CurrentSearchField"
+                    asp-route-startDate="@Model.pgParms.CurrentStartDate"
+                    asp-route-prevStartDate="@Model.pgParms.CurrentStartDate">
+                    <span class="fas fa-forward fa-lg "></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link me-1 @nextDisabled" 
+                    asp-page="./EventsLog"
+                    asp-route-prevSortOrder="@Model.pgParms.CurrentSort"
+                    asp-route-newSortOrder="@Model.pgParms.CurrentSort"
+                    asp-route-prevSortDirection="@invSortDirection"
+                    asp-route-searchString="@Model.pgParms.CurrentFilter"
+                    asp-route-pageIndex="@(Model.pgParms.TotalPages)"
+                    asp-route-pageSize="@Model.pgParms.CurrentPageSize"
+                    asp-route-workFlowId="@Model.pgParms.WorkFlowId"
+                    asp-route-searchField="@Model.pgParms.CurrentSearchField"
+                    asp-route-startDate="@Model.pgParms.CurrentStartDate"
+                    asp-route-prevStartDate="@Model.pgParms.CurrentStartDate">
+                    <span class="fas fa-fast-forward fa-lg "></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<script type="text/javascript">
+    function _submit_pageIndexA() {
+        var f = document.forms.namedItem("searchFooter-eln").elements;
+        f.namedItem("pageIndex").value = f.namedItem("pageIndexA").value;
+        document.forms.namedItem("searchFooter-eln").submit();
+    };
+
+    function _submit_pageSize_eln() {
+        var f = document.forms.namedItem("searchFooter-eln").elements;
+        f.namedItem("pageIndex").value = 1;
+        document.forms.namedItem("searchFooter-eln").submit();
+    };
+</script>

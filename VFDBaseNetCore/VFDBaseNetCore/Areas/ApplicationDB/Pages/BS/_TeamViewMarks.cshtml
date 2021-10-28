@@ -1,0 +1,25 @@
+﻿@using MTF.Areas.ApplicationDB.Pages.BS.Models
+@model List<bs_marks_v>
+
+    <div class="container-fluid mt-2">
+        @{ var sz = Model.Count(); }
+        @for (int i = 0; i < sz; i++)
+        {
+            <div class="h-100 d-inline-flex flex-row align-items-start mb-1 me-4">
+                <div class="flex-fill ms-auto me-1">
+                    <a class="fas fa-industry fa-lg"></a>
+                    <a class="">@Html.DisplayFor(m => m[i].mark_name)</a>
+                </div>
+                <div class="d-inline-flex align-middle text-center me-1">
+                    <span class="far fa-trash-alt fa-lg mx-0 px-0 mb-2 me-1"
+                          style="cursor: pointer; position: relative; bottom: -0.2rem"
+                          onclick="excludeMark('@Model[i].Id')">
+                    </span>
+                    <a asp-page="./MarkerView"
+                       asp-route-id="@Model[i].Id">
+                        <span class="far fa-list-alt fa-lg mx-0 px-0 me-1"></span>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>

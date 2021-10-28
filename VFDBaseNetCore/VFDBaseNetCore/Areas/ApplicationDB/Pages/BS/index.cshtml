@@ -1,0 +1,31 @@
+﻿@page
+@model MTF.Areas.ApplicationDB.BS.BSindexModel
+@{
+    var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var baseColor = MTF.GlobalParameters._baseColor;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    var teamAlias = MTF.GlobalParameters.TeamNameAlias;
+    var teamsAlias = MTF.GlobalParameters.TeamsNameAlias;
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+@using (Html.BeginForm(pageName, "", FormMethod.Post,
+                    new { id = "bs-index", name = "bs-index" }
+                    )
+        )
+{
+<div class="container-fluid mt-2">
+    <div class="row">
+        <span>Total @teamsAlias: @Model._pageParams.teams_number</span>
+    </div>
+    <div class="row">
+        <span>Total members in @teamsAlias: @Model._pageParams.teams_members_number</span>
+    </div>
+    <div class="row">
+        <span>Total active invitations: @Model._pageParams.teams_invitations_number</span>
+    </div>
+</div>
+}

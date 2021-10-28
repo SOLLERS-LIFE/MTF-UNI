@@ -1,0 +1,35 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: stores-check
+  namespace: sole-common
+  labels:
+    name: stores-check
+    app: stores-check
+spec:
+  schedule: "30 */3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      labels:
+        app: stores-check
+    spec:
+      template:
+        spec:
+          containers:
+          - name: stores-check
+            image: bosun-01.sollers-sftdev.lab:5000/mdb-probe:latest
+            imagePullPolicy: IfNotPresent
+            command: [ "/bin/bash", "-c", "--" ]
+            args: [ "./bitnami/mariadb/backup-sys/databases_check.sh" ]
+            volumeMounts:
+            - name: secundo
+              mountPath: /bitnami/mariadb
+              readOnly: false
+          restartPolicy: OnFailure
+          volumes:
+          - name: secundo
+            persistentVolumeClaim:
+              claimName: data-stores-sollers-secondary-0

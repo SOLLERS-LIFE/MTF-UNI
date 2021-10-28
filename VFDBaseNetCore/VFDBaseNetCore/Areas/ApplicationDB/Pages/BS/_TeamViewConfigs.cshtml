@@ -1,0 +1,19 @@
+﻿@using MTF.Areas.ApplicationDB.Pages.BS.Models
+@model List<bs_team_configs_v>
+
+    <div class="container-fluid mt-2">
+        @{ var sz = Model.Count(); }
+        @for (int i = 0; i < sz; i++)
+        {
+        <div class="h-100 d-inline-flex flex-row align-items-start mb-1 me-4">
+            <div class="flex-fill ms-auto me-2">
+                <a class="fas fa-cubes fa-lg"></a>
+                <a class="">@Html.DisplayFor(m => m[i].cnfName)</a>
+            </div>
+            <span class="flex-fill ms-auto me-1">
+                @Html.TextBoxFor(m => m[i].cnfValue,
+                        new { id = $"cnfVal{i}", onchange = $"updateConfigValue({Model[i].id_team},{Model[i].id_cnf},'{Model[i].cnfName}',{i},'{Model[i].cnfValue}')", @style = "width: 13em" })
+            </span>
+        </div>
+        }
+    </div>

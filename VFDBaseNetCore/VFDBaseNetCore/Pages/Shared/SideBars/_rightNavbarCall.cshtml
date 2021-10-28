@@ -1,0 +1,81 @@
+﻿@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+
+}
+
+<div class="d-flex flex-row"
+     style="z-index: 2048;">
+    @if (_lconsts.IsSignedIn)
+    {
+        <a class="navbar-brand ms-2"
+           style="cursor: pointer;"
+           title="Your Feedback"
+           onclick="_submit_feedback()">
+            <i class="fas fa-comment-alt fa-fw me-1"></i>
+            <span></span>
+        </a>
+        <a id="rNbToggler"
+           data-mdb-toggle="sidenav"
+           data-mdb-target="#sidenavRight"
+           class="navbar-brand"
+           aria-controls="#sidenavRight"
+           aria-haspopup="true"
+           style="cursor: pointer;"
+           title="Access your personal menu">
+            <i class="fas fa-user-tie fa-fw me-1"></i>
+        </a>
+        <script type="text/javascript">
+            function _submit_feedback() {
+                opnModalYNClaim("Please provide your feedback", "", "", "", 13, "Up to 1000 symbols");
+            }
+        </script>
+    }
+    else
+    {
+        <a class="navbar-brand"
+           asp-area="Identity" asp-page="/Account/Login"
+           title="Login as existent user or Create new account">
+            <span class="fas fa-user-check fa-fw me-2"></span>
+            <span>Login</span>
+        </a>
+    }
+
+</div>
+
+<div class="modal" id="ModalYNClaim"
+     data-mdb-backdrop="static"
+     data-mdb-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="ModalYNCaptionClaim" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalYNCaptionClaim">Modal title</h5>
+                <button type="button" class="close" data-mdb-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span id="ModalYNMsgClaim" class="text-center"><strong>question</strong></span>
+                <!-- Message input -->
+                <form action="">
+                    <div class="form-group">
+                        <textarea class="form-control" id="inputTxtClaim" rows="1"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-sm btn-primary" data-mdb-dismiss="modal">
+                    Don't Send
+                </button>
+                <button id="btnOKClaim" type="button" class="btn btn-sm btn-primary">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Claims (Feedbacks) registration userv interface -->
+<script type="text/javascript" src="~/js/claims.js"
+        asp-append-version="true"></script>

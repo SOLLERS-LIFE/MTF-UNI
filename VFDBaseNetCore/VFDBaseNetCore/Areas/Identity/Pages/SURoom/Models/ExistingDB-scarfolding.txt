@@ -1,0 +1,14 @@
+﻿Use Scaffold-DbContext to create a model based on your existing database. The following parameters can be specified with Scaffold-DbContext in Package Manager Console:
+
+Scaffold-DbContext [-Connection] [-Provider] [-OutputDir] [-Context] [-Schemas>] [-Tables>] 
+                    [-DataAnnotations] [-Force] [-Project] [-StartupProject] [<CommonParameters>]
+In Visual Studio, select menu Tools -> NuGet Package Manger -> Package Manger Console and run the following command:
+
+PM> Scaffold-DbContext "Server=.\SQLExpress;Database=SchoolDB;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+In the above command, the first parameter is a connection string which includes three parts: DB Server, database name and security info. Here, Server=.\SQLExpress; refers to local SQLEXPRESS database server. Database=SchoolDB; specifies the database name "SchoolDB" for which we are going to create classes. Trusted_Connection=True; specifies the Windows authentication. It will use Windows credentials to connect to the SQL Server. The second parameter is the provider name. We use provider for the SQL Server, so it is Microsoft.EntityFrameworkCore.SqlServer. The -OutputDir parameter specifies the directory where we want to generate all the classes which is the Models folder in this case.
+
+Use the following command to get the detailed help on Scaffold-DbContext command:
+
+PM> get-help scaffold-dbcontext –detailed
+
+Source: https://www.entityframeworktutorial.net/efcore/create-model-for-existing-database-in-ef-core.aspx

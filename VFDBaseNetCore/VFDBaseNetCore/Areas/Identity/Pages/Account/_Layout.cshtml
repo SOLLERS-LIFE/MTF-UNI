@@ -1,0 +1,14 @@
+﻿@{
+    // Layout = "/Areas/Identity/Pages/_Layout.cshtml"; // VFD
+    Layout = "/Pages/Shared/_Layout.cshtml"; // VFD to provide the same layout to security related and common pages
+}
+
+<div class="pt-sm-1">
+    @RenderBody()
+</div>
+
+<!--partial name="~/Pages/Shared/_CommonFooter.cshtml"-->
+
+    @section Scripts {
+        @RenderSection("Scripts", required: false)
+    }

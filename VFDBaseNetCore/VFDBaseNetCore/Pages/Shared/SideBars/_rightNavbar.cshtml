@@ -1,0 +1,161 @@
+﻿@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+}
+
+<nav id="sidenavRight"
+     class="sidenav"
+     style="background-color: @_lconsts.baseColor"
+     data-mdb-color="light"
+     data-mdb-right="false"
+     data-mdb-mode="over" data-mdb-content="#pageitself"
+     data-mdb-hidden="true"
+     data-mdb-accordion="true"
+     data-mdb-scroll-container="#scroll-container-rt"
+     data-mdb-transition-duration="@_lconsts.sidenavTransitionDuration"
+     data-mdb-width="@_lconsts.sidenavWidth">
+    <script type="text/javascript">
+        function pm_toggle() {
+            document.getElementById('selfTogglerRM').click();
+        }
+    </script>
+    <div id="scroll-container-rt" class="sidenav-menu" onclick="pm_toggle()">
+        @if (_lconsts.IsSignedIn)
+        {
+            <div class="sidenav-item">
+                <a class="sidenav-link active py-3 ps-2
+                      bg-intensive
+                      border-top border-bottom border-2 rounded-0"
+                   style="cursor: pointer;">
+                    <i class="fas fa-arrow-left fa-fw me-2"></i>
+                    <span class="">Personal menu</span>
+                </a>
+            </div>
+            <div class="sidenav-item">
+                <a id="selfTogglerRM" class="sidenav-link active d-none"
+                   data-mdb-toggle="sidenav" data-mdb-target="#sidenavRight"
+                   aria-controls="#sidenavRight" aria-haspopup="true">
+                </a>
+            </div>
+            <div class="sidenav-item">
+                <a class="sidenav-link active ps-2"
+                   asp-area="Identity" asp-page="/Account/Manage/Index"
+                   title="Your Profile">
+                    <span>@User.Identity.Name</span>
+                </a>
+            </div>
+            <div class="sidenav-item">
+                <a class="sidenav-link active ps-2"
+                   asp-area="" asp-page="/Chat"
+                   title="Chat">
+                    <span>Chat</span>
+                </a>
+            </div>
+            <div class="sidenav-item">
+                <a id="doLogout"
+                   class="sidenav-link active ps-2
+                            bg-intensive
+                            border-top border-bottom border-2 rounded-0"
+                   title="Finalize your session"
+                   onclick="fnLogout(event)">
+                    <span>Logout</span>
+                </a>
+                <script type="text/javascript">
+                    function fnLogout(event) {
+                        opnModalYNSimple("Are you sure you want to logout?", "logout", "Finalize your session");
+                    };
+                    function logoutSimpleNo() {
+                        console.log('No logout.');
+                    };
+                    function logoutSimpleYes() {
+                        try {
+                            var f = document.forms.namedItem("doLogoutFrm");
+                            f.submit();
+                        } catch (e) {
+                            alert(e.message);
+                        };
+                    };
+                </script>
+            </div>
+            @if (_lconsts.isSU)
+            {
+                <div class="sidenav-item">
+                    <a class="sidenav-link active ps-2"
+                       asp-area="Logging" asp-page="/EventsLog"
+                       title="Events Log">
+                        <span>Events Log</span>
+                    </a>
+                </div>
+                <div class="sidenav-item">
+                    <a class="sidenav-link active ps-2"
+                       asp-area="Identity" asp-page="/SURoom/CommonUsersList"
+                       title="Users List">
+                        <span>Users List</span>
+                    </a>
+                </div>
+                <div class="sidenav-item">
+                    <a class="sidenav-link active ps-2"
+                       asp-area="Identity" asp-page="/SURoom/CommonRolesList"
+                       title="Roles List">
+                        <span>Roles List</span>
+                    </a>
+                </div>
+                <div class="sidenav-item">
+                    <a class="sidenav-link active ps-2"
+                       asp-area="Logging" asp-page="/ClaimsLog"
+                       title="Claims Log">
+                        <span>Claims List</span>
+                    </a>
+                </div>
+                <div class="sidenav-item">
+                    <a class="sidenav-link active ps-2
+                        border-top border-2 rounded-0"
+                       asp-area="Identity" asp-page="/SURoom/Broadcast"
+                       title="Send Broadcast Message">
+                        <span>Broadcast</span>
+                    </a>
+                </div>
+                <div class="sidenav-item">
+                    <a class="sidenav-link active ps-2"
+                       asp-area="Identity" asp-page="/SURoom/Shutdown"
+                       title="Request System Restart">
+                        <span>Restart</span>
+                    </a>
+                </div>
+            }
+            <div class="sidenav-item">
+                <a class="sidenav-link active py-3 ps-2
+                              bg-intensive
+                              border-bottom border-1 rounded-0"
+                   style="cursor: pointer;">
+                    <i class="fas fa-arrow-left fa-fw me-2"></i>
+                    <span>Close</span>
+                </a>
+            </div>
+        }
+        <form name="doLogoutFrm" id="doLogoutFrm"
+              class="form-inline d-none"
+              method="post"
+              asp-area="Identity" asp-page="/Account/Logout"
+              asp-route-returnUrl="@Url.Page("/", new { area = "" })">
+        </form>
+    </div>
+    @if (_lconsts.isTester)
+    { 
+        <ul class="sidenav-menu">
+            <li class="sidenav-item">
+                <a class="sidenav-link active ps-2">
+                    <i class="fas fa-grin fa-fw me-2 "></i>
+                    <span class="">Tests</span>
+                </a>
+                <ul class="sidenav-collapse show">
+                    <li class="sidenav-item">
+                        <a asp-page="/LookingForward/asideOpsTests"
+                           class="sidenav-link active ps-4">
+                            Aside Ops Facility
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    }
+</nav>

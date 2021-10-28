@@ -1,0 +1,35 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization;
+@using MTF.Areas.Identity.Authorization;
+@inject SignInManager<CommonUser> SignInManager
+@inject UserManager<CommonUser> UserManager
+@inject IAuthorizationService AuthorizationService
+@{
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var isSU = await AuthorizationService.AuthorizeAsync(
+                                                           User,
+                                                           UserManager.GetUserId(User),
+                                                           AuthOperations.NoRestrictions
+                                                          );
+    var bsAlias = MTF.GlobalParameters.BusinessStructureAlias;
+}
+<ul class="sidenav-menu">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="sidenav-item">
+            <a class="sidenav-link active ps-2"
+               asp-page="./uc"
+               onclick="toggleWait()">
+                <i class="fas fa-certificate fa-fw me-2"></i>
+                <span>Subsystem First</span>
+            </a>
+        </li>
+        <li class="sidenav-item">
+            <a class="sidenav-link active ps-2"
+               asp-area="ApplicationDB" asp-page="/BS/index">
+                <i class="fas fa-shield-alt fa-fw me-2"></i>
+                <span>@bsAlias</span>
+            </a>
+        </li>
+    }
+</ul>

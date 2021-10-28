@@ -1,0 +1,123 @@
+﻿@page
+@model MTF.Pages.IndexModel
+@{
+    //var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var _onload = "_onload()";
+    if (@Model.pageParams.warnedAboutCookies == "Yes")
+    {
+        _onload = "";
+    }
+    //var user = await UserManager.GetUserAsync(User);
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+
+    ViewData["Title"] = Model.PageName;
+}
+<script type="text/javascript">
+    var _ldflg;
+    _ldflg = 0;
+    function _onload() {
+        if (_ldflg == 0) {
+            opnCookieWarn();
+            _ldflg = 1;
+        }
+    }
+</script>
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model=@Model._statusMessage />
+
+<div onmouseover="@_onload">
+    <div class="container mx-auto">
+        @if (_lconsts.IsSignedIn)
+        {
+            <div class="text-end me-4">
+                <i>Dear @_lconsts.user.FullName, nice to see you again.</i>
+            </div>
+        }
+        else
+        {
+            <div class="text-end me-4">
+                <span class="lead">Please log in or visit our descriptive web-site.</span>
+            </div>
+        }
+    </div>
+    <div class="mx-1 my-1">
+        @if (!String.IsNullOrEmpty(@GlobalParameters._systemClosedButSUS))
+        {
+            <div class="d-flex justify-content-center mb-2">
+                <div class="card col-8">
+                    <div class="card-header">
+                        <span class="card-title text-danger">The system is in service.</span>
+                    </div>
+                    <div class="card-body">
+                        <span class="card-text lead text-danger">@GlobalParameters._systemClosedButSUS</span>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (!String.IsNullOrEmpty(@GlobalParameters._announcement))
+        {
+            <div class="d-flex justify-content-center mb-2">
+                <div class="card col-8">
+                    <div class="card-header">
+                        Administrator's Announcement
+                    </div>
+                    <div class="card-body">
+                        <span class="card-text lead">@GlobalParameters._announcement</span>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <span class="fs-6 fst-italic">@GlobalParameters._annDate</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <partial name="~/Pages/Shared/_CommonFooter.cshtml" />
+</div>
+
+<!-- cookie disclaimer -->
+<script type="text/javascript">
+    function opnCookieWarn() {
+        _modalCookieinstance.show();
+    }
+    function clsCookieWarn() {
+        _modalCookieinstance.hide();
+    }
+</script>
+<div class="modal bottom"
+        id="cookie_warn"
+        data-mdb-backdrop="static"
+        data-mdb-keyboard="false"
+        tabindex="-1"
+        aria-hidden="true">
+    <div class="modal-dialog modal-frame modal-bottom">
+        <div class="modal-content">
+            <div class="modal-body py-1">
+                <div class="d-flex justify-content-center align-items-center my-3">
+                    <p class="mb-0">We use cookies to improve your website experience</p>
+                    <button type="button"
+                            id="modalCookieOK"
+                            class="btn btn-success btn-sm ms-2"
+                            onclick="clsCookieWarn()">
+                        Ok, thanks
+                    </button>
+                    <a class="btn btn-primary btn-sm ms-2"
+                        asp-area="" asp-page="/PrivacyPolicy">
+                        Learn more
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    const _modalCookie = document.getElementById('cookie_warn')
+    const _modalCookieOK = document.getElementById('modalCookieOK')
+    const _modalCookieinstance = new mdb.Modal(_modalCookie);
+
+    _modalCookie.addEventListener('shown.mdb.modal',
+        () => {
+            _modalCookieOK.focus();
+        }
+    );
+</script>
+<!-- cookie disclaimer-->

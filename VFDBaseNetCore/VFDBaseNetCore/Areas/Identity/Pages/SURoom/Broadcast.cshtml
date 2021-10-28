@@ -1,0 +1,53 @@
+﻿@page
+@model MTF.Areas.Identity.Pages.SURoom.BroadcastModel
+@{
+    var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+@using (Html.BeginForm(pageName, "", FormMethod.Post,
+                       new { id = "pageForm", name = "pageForm" }
+                      )
+)
+{
+<div class="container-fluid pt-5 px-5">
+    <div class="row pb-2">
+        <div class="col-2" style="min-width: 5em;">
+            <span class="text-primary text-right pr-1">Broadcast Message:</span>
+        </div>
+        <div class="col-10">
+            @Html.EditorFor(m => m.input.broadcastMsg, new { htmlAttributes = new { @class = "form-control text-left", rows = "5" } })
+        </div>
+    </div>
+    <div class="row pb-2">
+        <div class="col-2" style="min-width: 5em;">
+            <span class="text-primary text-right pr-1">Timeout, mins:</span>
+        </div>
+        <div class="col-2" style="min-width: 5em;">
+            @Html.EditorFor(m => m.input.tOut, new { htmlAttributes = new { @class = "form-control text-center" } })
+        </div>
+    </div>
+    <div class="row pb-2">
+        <div class="col-12 align-content-start">
+            <button type="button" class="btn btn-primary"
+                    onclick="opnModalYNSimple('Do you want to broadcast?','hostBroadcast');">
+                Request Broadcast
+            </button>
+        </div>
+    </div>
+</div>
+}
+
+<!--partial name="~/Pages/Shared/_CommonFooter.cshtml"-->
+
+<script type="text/javascript">
+    function hostBroadcastSimpleYes(str) {
+        var f = document.forms.namedItem("pageForm");
+        f.submit();
+    }
+    function hostBroadcastSimpleNo(str) {
+        var f = document.forms.namedItem("pageForm");
+    }
+</script>

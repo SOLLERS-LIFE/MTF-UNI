@@ -1,0 +1,154 @@
+﻿@model MTF.Areas.Identity.Pages.SURoom.CommonUsersListModel
+
+@{  var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var baseColor = MTF.GlobalParameters._baseColor;
+    var prevDisabled = !(@Model._invariants.PageIndex > 1) ? "disabled-link text-muted" : "text-primary text-darken";
+    var nextDisabled = !(@Model._invariants.PageIndex < Model._invariants.TotalPages) ? "disabled-link text-muted" : "text-primary text-darken";
+
+    var invSortDirection = @Model._invariants.SortDirection ?? "_desc";
+    invSortDirection = invSortDirection == "_desc" ? "_" : "_desc";
+
+    var gpaps = MTF.GlobalParameters.AvailablePageSizes;
+}
+
+<nav id="pageBarBottom" class="navbar navbar-expand fixed-bottom" style="z-index: 2048;">
+     <div class="container-fluid d-flex justify-content-between">
+        <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#uscp-001"
+                aria-controls="uscp-001" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="fas fa-bars fa-lg"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="uscp-001">
+            <form class="form-inline text-black" name="searchFooter-ulv" id="searchFooter-ulv"
+                  asp-page="./CommonUsersList" method="get">
+                    <!--  fictive input to pass values to get handlers -->
+                    <input type="hidden" asp-for="@Model._invariants.CurrentSearchField"
+                            name="searchField" , id="searchField" />
+                    <input type="hidden" asp-for="@Model._invariants.WorkFlowId"
+                            name="workFlowId" , id="workFlowId" />
+                    <input type="hidden" asp-for="@Model._invariants.CurrentRole"
+                            name="searchRole" , id="searchRole" />
+                    <input type="hidden" asp-for="@Model._invariants.CurrentFilter"
+                            name="searchString" , id="searchString" />
+                    <input type="hidden" asp-for="@Model._invariants.CurrentSort"
+                            name="prevSortOrder" , id="prevSortOrder" />
+                    <input type="hidden" asp-for="@Model._invariants.CurrentSort"
+                            name="newSortOrder" , id="newSortOrder" />
+                    <input type="hidden" asp-for="@invSortDirection"
+                            name="prevSortDirection" , id="prevSortDirection" />
+                    <input type="hidden" asp-for="@Model._invariants.CurrentRole"
+                            name="prevSearchRole" , id="prevSearchRole" />
+                    <input type="hidden" asp-for="@Model._invariants.PageIndex"
+                            name="pageIndex" , id="pageIndex" />
+                    <!--  fictive input to pass values to get handlers END -->
+                    <span class="text-th me-2">
+                        Page:
+                    </span>
+                    <input class="select-box-btm page-num text-end me-2"
+                            name="pageIndexA" id="pageIndexA"
+                            asp-for="@Model._invariants.PageIndex" type="number" min="1" step="1" max="@Model._invariants.TotalPages"
+                            onchange="_submit_pageIndexA()" />
+                    <script>
+                        function _submit_pageIndexA() {
+                            var f = document.forms.namedItem("searchFooter-ulv").elements;
+                            f.namedItem("pageIndex").value = f.namedItem("pageIndexA").value;
+                            document.forms.namedItem("searchFooter-ulv").submit();
+                        }
+                    </script>
+                    <span class="text-th me-2">
+                        Of @Model._invariants.TotalPages
+                    </span>
+                    <span class="text-th me-2">
+                        @Html.DisplayFor(model => Model.PagingNotification)
+                    </span>
+                    <span class="text-th me-1">
+                        by
+                    </span>
+                    <select class="select-box-btm me-2"
+                            name="pageSize" id="pageSize"
+                            asp-for="@Model._invariants.CurrentPageSize" asp-items="@gpaps"
+                            onchange="_submit_pageSize()">
+                    </select>
+                    <script>
+                        function _submit_pageSize() {
+                            var f = document.forms.namedItem("searchFooter-ulv").elements;
+                            f.namedItem("pageIndex").value = 1;
+                            document.forms.namedItem("searchFooter-ulv").submit();
+                        }
+                    </script>
+                    <span class="text-th">
+                        p/p
+                    </span>
+            </form>
+        </div>
+        <ul class="navbar-nav d-flex flex-row">
+            <li class="nav-item">
+                <a class="nav-link me-1 @prevDisabled"
+                    asp-page="./CommonUsersList"
+                    asp-route-prevSortOrder="@Model._invariants.CurrentSort"
+                    asp-route-newSortOrder="@Model._invariants.CurrentSort"
+                    asp-route-prevSortDirection="@invSortDirection"
+                    asp-route-searchString="@Model._invariants.CurrentFilter"
+                    asp-route-pageIndex="1"
+                    asp-route-pageSize="@Model._invariants.CurrentPageSize"
+                    asp-route-workFlowId="@Model._invariants.WorkFlowId"
+                    asp-route-searchRole="@Model._invariants.CurrentRole"
+                    asp-route-searchField="@Model._invariants.CurrentSearchField"
+                    asp-route-prevSearchRole="@Model._invariants.CurrentRole">
+                    <span class="fas fa-fast-backward fa-lg "></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link me-1 @prevDisabled"
+                    asp-page="./CommonUsersList"
+                    asp-route-prevSortOrder="@Model._invariants.CurrentSort"
+                    asp-route-newSortOrder="@Model._invariants.CurrentSort"
+                    asp-route-prevSortDirection="@invSortDirection"
+                    asp-route-searchString="@Model._invariants.CurrentFilter"
+                    asp-route-pageIndex="@(Model._invariants.PageIndex - 1)"
+                    asp-route-pageSize="@Model._invariants.CurrentPageSize"
+                    asp-route-workFlowId="@Model._invariants.WorkFlowId"
+                    asp-route-searchRole="@Model._invariants.CurrentRole"
+                    asp-route-searchField="@Model._invariants.CurrentSearchField"
+                    asp-route-prevSearchRole="@Model._invariants.CurrentRole">
+                    <span class="fas fa-backward fa-lg "></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link me-1 @nextDisabled"
+                    asp-page="./CommonUsersList"
+                    asp-route-prevSortOrder="@Model._invariants.CurrentSort"
+                    asp-route-newSortOrder="@Model._invariants.CurrentSort"
+                    asp-route-prevSortDirection="@invSortDirection"
+                    asp-route-searchString="@Model._invariants.CurrentFilter"
+                    asp-route-pageIndex="@(Model._invariants.PageIndex + 1)"
+                    asp-route-pageSize="@Model._invariants.CurrentPageSize"
+                    asp-route-workFlowId="@Model._invariants.WorkFlowId"
+                    asp-route-searchRole="@Model._invariants.CurrentRole"
+                    asp-route-searchField="@Model._invariants.CurrentSearchField"
+                    asp-route-prevSearchRole="@Model._invariants.CurrentRole">
+                    <span class="fas fa-forward fa-lg "></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link me-1 @nextDisabled"
+                    asp-page="./CommonUsersList"
+                    asp-route-prevSortOrder="@Model._invariants.CurrentSort"
+                    asp-route-newSortOrder="@Model._invariants.CurrentSort"
+                    asp-route-prevSortDirection="@invSortDirection"
+                    asp-route-searchString="@Model._invariants.CurrentFilter"
+                    asp-route-pageIndex="@(Model._invariants.TotalPages)"
+                    asp-route-pageSize="@Model._invariants.CurrentPageSize"
+                    asp-route-workFlowId="@Model._invariants.WorkFlowId"
+                    asp-route-searchRole="@Model._invariants.CurrentRole"
+                    asp-route-searchField="@Model._invariants.CurrentSearchField"
+                    asp-route-prevSearchRole="@Model._invariants.CurrentRole">
+                    <span class="fas fa-fast-forward fa-lg "></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+
+

@@ -1,0 +1,36 @@
+﻿<div class="modal" id="ModalYN"
+     data-mdb-backdrop="static"
+     data-mdb-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="ModalYNCaption" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title " id="ModalYNCaption">Modal title</h5>
+                <button type="button" class="close " data-mdb-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span id="ModalYNMsg" class="text-center"><strong>question</strong></span>
+                <!-- Message input -->
+                <form action="">
+                    <div class="form-group">
+                        <textarea class="form-control" id="ModalYNinputTxt" rows="1"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-sm btn-secondary" data-mdb-dismiss="modal"
+                        onclick="opnModalYNNoWrapper()">
+                    No
+                </button>
+                <button type="button" class="btn btn-sm btn-primary"
+                        onclick="opnModalYNYesWrapper()">
+                    Yes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,36 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization;
+@using MTF.Areas.Identity.Authorization;
+@inject SignInManager<CommonUser> SignInManager
+@inject UserManager<CommonUser> UserManager
+@inject IAuthorizationService AuthorizationService
+@{
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var isSU = await AuthorizationService.AuthorizeAsync(
+                                                           User,
+                                                           UserManager.GetUserId(User),
+                                                           AuthOperations.NoRestrictions
+                                                          );
+}
+
+<ul class="sidenav-menu">
+    <li class="sidenav-item">
+        <a class="sidenav-link active ps-2"
+           onclick="newRole()">
+            <i class="fas fa-users fa-fw me-2"></i>
+            <span>Add Role</span>
+        </a>
+        <script type="text/javascript">
+            function newRole() {
+                opnModalYN("Adding new role", "Do you want to add a new role with name:", "someRole", "AddRole");
+            };
+            function AddRoleYes(resType, resVal) {
+                var f = document.forms.namedItem("pageForm");
+                f.elements.namedItem("input.actionName").value = "addRole";
+                f.elements.namedItem("input.actionParm").value = resVal;
+                f.submit();
+            };
+        </script>
+    </li>
+</ul>
+

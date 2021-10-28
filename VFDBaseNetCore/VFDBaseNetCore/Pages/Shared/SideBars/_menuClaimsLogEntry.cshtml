@@ -1,0 +1,51 @@
+﻿@model MTF.Areas.Logging.Pages.ClaimsLogEntryModel;
+
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Authorization;
+@using MTF.Areas.Identity.Authorization;
+@inject SignInManager<CommonUser> SignInManager
+@inject UserManager<CommonUser> UserManager
+@inject IAuthorizationService AuthorizationService
+@{
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var isSU = await AuthorizationService.AuthorizeAsync(
+                                                           User,
+                                                           UserManager.GetUserId(User),
+                                                           AuthOperations.NoRestrictions
+                                                          );
+}
+<form class="d-none" name="cleoper" id="cleoper"
+      asp-page="./ClaimsLogEntry" method="post">
+    <!--  fictive input to pass values to post handlers -->
+    <input type="hidden" asp-for="@Model.oper._op"
+           name="_op" , id="_op" />
+    <input type="hidden" asp-for="@Model.oper._prm"
+           name="_prm" , id="_prm" />
+    <input type="hidden" asp-for="@Model.oper._id"
+           name="_id" , id="_id" />
+    <!--  fictive input to pass values to post handlers END -->
+</form>
+<ul class="sidenav-menu">
+    <li class="sidenav-item">
+        <a class="sidenav-link active ps-2"
+           style="cursor: pointer" onclick="_submit_op()">
+            <i class="fas fa-check-double fa-fw me-2"></i>
+            <span>Toggle Reviewed</span>
+        </a>
+    </li>
+</ul>
+<script type="text/javascript">
+                function _submit_op() {
+                    var f = document.forms.namedItem("cleoper").elements;
+                    opnModalYNSimple("Do you want to toggle reviewed state?", "cleoper", "Claim Log Entry");
+                };
+                function cleoperSimpleYes(resType, resVal) {
+                    var f = document.forms.namedItem(resType);
+                    if (resType == "cleoper") {
+                        f.elements.namedItem("_op").value = "toggle";
+                        f.elements.namedItem("_prm").value = @Model.input.prevID;
+                        f.elements.namedItem("_id").value = @Model.input.ID;
+                        f.submit();
+                    }
+                };
+</script>

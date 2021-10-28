@@ -1,0 +1,115 @@
+﻿@page
+@model LoginModel
+
+@using AspNetCore.ReCaptcha
+@using Microsoft.Extensions.Options
+@inject IOptions<ReCaptchaSettings> ReCaptchaSettings
+@addTagHelper *, AspNetCore.ReCaptcha
+
+@{
+    ViewData["Title"] = "Log in";
+    Layout = "./_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <h5 class="">Please log in</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <form id="account" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group mb-2">
+                    <label class="form-label" asp-for="Input.Email">Email address</label>
+                    <input type="email" id="email-addr" class="form-control" asp-for="Input.Email" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="form-label" asp-for="Input.Password">Password</label>
+                    <input type="password" asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                </div>
+
+                <div class="form-group">
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <recaptcha language="en-GB" />
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                            <button type="submit" class="btn btn-block btn-primary" id="login"><span>Log in</span></button>
+                        </div>
+                        <div class="col-6 d-none">
+                            <div class="checkbox">
+                                <label asp-for="Input.RememberMe">
+                                    <input asp-for="Input.RememberMe" />
+                                    @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="row mt-3">
+                <div class="col">
+                    <strong>Or</strong>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <a type="button" class="btn btn-block btn-primary"
+                       asp-area="Identity" asp-page="/Account/Register"
+                       asp-route-returnUrl="@Model.ReturnUrl">
+                        <span>Register</span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <strong></strong>
+                </div>
+            </div>
+
+            <form id="external-account" method="post"
+                  asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+                
+                <div class="form-group">
+                    @{ //  See https://go.microsoft.com/fwlink/?LinkID=532715 for details on setting up this ASP.NET application to support logging in via external services.
+                        if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                        {
+                        }
+                        else
+                        {
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <strong>Or </strong><span>register your account from some other service to log in</span>
+                                </div>
+                            </div>
+                            @foreach (var provider in Model.ExternalLogins)
+                            {
+                                <div class="row">
+                                    <div class="col-6">
+                                        <button type="submit" class="btn btn-block btn-primary"
+                                                name="provider" value="@provider.Name"
+                                                title="Log in using your @provider.DisplayName account">
+                                            @provider.DisplayName
+                                        </button>
+                                    </div>
+                                    <div class="col-6">
+                                        <strong></strong>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

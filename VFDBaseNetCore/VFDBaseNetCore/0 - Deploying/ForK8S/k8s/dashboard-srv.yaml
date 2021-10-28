@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dashboard-main
+  namespace: kubernetes-dashboard
+spec:
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 8443
+      nodePort: 31555
+  selector:
+    k8s-app: kubernetes-dashboard
+  type: NodePort
+  sessionAffinity: None

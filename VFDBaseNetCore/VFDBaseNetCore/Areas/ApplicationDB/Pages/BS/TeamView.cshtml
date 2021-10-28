@@ -1,0 +1,353 @@
+﻿@page
+@model MTF.Areas.ApplicationDB.BS.TeamViewModel
+@{
+    var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var baseColor = MTF.GlobalParameters._baseColor;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    var teamAlias = MTF.GlobalParameters.TeamNameAlias;
+    var teamsAlias = MTF.GlobalParameters.TeamsNameAlias;
+    var markAlias = MTF.GlobalParameters.MarkNameAlias;
+    var marksAlias = MTF.GlobalParameters.MarksNameAlias;
+    var bsAlias = MTF.GlobalParameters.BusinessStructureAlias;
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+@using (Html.BeginForm(pageName, "", FormMethod.Post,
+           new { id = "bs-teamview", name = "bs-teamview" }
+           )
+)
+{
+    <input type="hidden" asp-for="@Model._team.Id"
+           name="team-id" id="team-id" />
+
+    <input type="hidden" asp-for="@Model._operation._op"
+           name="_op" , id="_op" />
+    <input type="hidden" asp-for="@Model._operation._src"
+           name="_src" , id="_src" />
+    <input type="hidden" asp-for="@Model._operation._prm"
+           name="_prm" , id="_prm" />
+    <input type="hidden" asp-for="@Model._operation._prm2"
+           name="_prm2" , id="_prm2" />
+}
+
+<div class="container-fluid mt-2">
+    <div class="row">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="ApplicationDB" asp-page="/BS/index">@bsAlias</a></li>
+                <li class="breadcrumb-item"><a asp-area="ApplicationDB" asp-page="/BS/Teams">My @teamsAlias</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><strong>@Model._team.name</strong></li>
+            </ol>
+        </nav>
+    </div>
+    <div class="row">
+        <ul class="nav nav-tabs mb-3" id="teamViewTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active"
+                   id="membersTab"
+                   data-mdb-toggle="tab"
+                   href="#membersArea"
+                   role="tab"
+                   aria-controls="Members"
+                   aria-selected="true">
+                    Members
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link"
+                   id="invitationsTab"
+                   data-mdb-toggle="tab"
+                   href="#invitationsArea"
+                   role="tab"
+                   aria-controls="Invitations"
+                   aria-selected="false">
+                    Invitations
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link"
+                   id="historyTab"
+                   data-mdb-toggle="tab"
+                   href="#historyArea"
+                   role="tab"
+                   aria-controls="History"
+                   aria-selected="false">
+                    History
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link"
+                   id="marksTab"
+                   data-mdb-toggle="tab"
+                   href="#marksArea"
+                   role="tab"
+                   aria-controls="Marks"
+                   aria-selected="false">
+                    @marksAlias
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link"
+                   id="configsTab"
+                   data-mdb-toggle="tab"
+                   href="#configsArea"
+                   role="tab"
+                   aria-controls="Configs"
+                   aria-selected="false">
+                    Configuration
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="tab-content" id="TeamView">
+        <div class="tab-pane fade show active" id="membersArea" role="tabpanel" aria-labelledby="membersTab">
+            <div class="container-fluid mt-2">
+                @{ var sz = Model._teamUsers.Count(); }
+                @for (int i = 0; i < sz; i++)
+                {
+                    <div class="h-100 d-inline-flex flex-row align-items-start mb-1 me-4">
+                        <div class="flex-fill ms-auto">
+                            <a asp-area="Identity" asp-page="/Account/Manage/Index" asp-route-id="@Model._teamUsers[i].id_user">
+                                <span class="fas fa-user fa-lg"></span>
+                            </a>
+                            <a asp-area="Identity" asp-page="/Account/Manage/Index" asp-route-id="@Model._teamUsers[i].id_user">
+                                <span class="">@Html.DisplayFor(m => m._teamUsers[i].name)</span>
+                            </a>
+                            <div class="d-inline-flex align-middle text-center me-1">
+                                <select class="select-box me-1" aria-label="role"
+                                        name="_role-@i" id="_role-@i"
+                                        asp-for="@Model._teamUsers[i]._role" asp-items="@Model.AvailableUserRoles"
+                                        onfocus="this.oldvalue = this.value;"
+                                        onchange="askForRoleChange('@Model._teamUsers[i].id_user', this.value,@i, this.oldvalue)">
+                                </select>
+                                <a class="fas fa-times fa-lg"
+                                   style="cursor: pointer;"
+                                   onclick="excludeMember('@Model._teamUsers[i].id_user')">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="tab-pane fade" id="invitationsArea" role="tabpanel" aria-labelledby="invitationsTab">
+            <div class="flex-row">
+                <span>Please wait a moment..</span>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="marksArea" role="tabpanel" aria-labelledby="marksTab">
+            @teamAlias @marksAlias
+        </div>
+        <div class="tab-pane fade" id="historyArea" role="tabpanel" aria-labelledby="historyTab">
+            <div class="flex-row">
+                <span>Please wait a moment..</span>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="configsArea" role="tabpanel" aria-labelledby="configsTab">
+            <div class="flex-row">
+                <span>Please wait a moment..</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var _tw_ndx = 0;
+    var _tw_oldRole = 0;
+    var f_teamview = document.forms.namedItem("bs-teamview");
+
+    var _invitationsLoaded = false;
+    var _marksLoaded = false;
+    var _historyLoaded = false;
+    var _configsLoaded = false;
+    load = function (url, el) {
+        fetch(url)
+            .then((response) => {
+                return response.text();
+            })
+            .then((result) => {
+                document.getElementById(el).innerHTML = result;
+            });
+    }
+    const triggerTabList = [].slice.call(document.querySelectorAll('.nav-' + "tabs" + ' a'));
+    triggerTabList.forEach((triggerEl) => {
+        const tabTrigger = new mdb.Tab(triggerEl);
+        triggerEl.addEventListener('shown.mdb.tab', (event) => {
+            switch (event.target.getAttribute("href")) {
+                case "#invitationsArea":
+                    if (!_invitationsLoaded) {
+                        load("/ApplicationDB/BS/TeamView?handler=Invitations&id=@Model._team.Id", 'invitationsArea');
+                        _invitationsLoaded = true;
+                    };
+                    break;
+                case "#historyArea":
+                    if (!_historyLoaded) {
+                        load("/ApplicationDB/BS/TeamView?handler=History&id=@Model._team.Id", 'historyArea');
+                        _historyLoaded = true;
+                    };
+                    break;
+                case "#marksArea":
+                    if (!_marksLoaded) {
+                        load("/ApplicationDB/BS/TeamView?handler=Marks&id=@Model._team.Id", 'marksArea');
+                        _marksLoaded = true;
+                    };
+                    break;
+                case "#configsArea":
+                    if (!_configsLoaded) {
+                        load("/ApplicationDB/BS/TeamView?handler=Configs&id=@Model._team.Id", 'configsArea');
+                        _configsLoaded = true;
+                    };
+                    break;
+            }
+        });
+    });
+
+    function askForRoleChange(_idUser, _newRole, _ndx, _oldRole) {
+        _tw_ndx = _ndx;
+        _tw_oldRole = _oldRole;
+
+        f_teamview.elements.namedItem("_op").value = "submitRole";
+        f_teamview.elements.namedItem("_prm").value = _idUser;
+        f_teamview.elements.namedItem("_prm2").value = _newRole;
+        f_teamview.elements.namedItem("_src").value = @Model._team.Id;
+        opnModalYNSimple(
+            "Do you really want to change @teamAlias member role?",
+            "changeRole",
+            "@bsAlias - @teamsAlias"
+        );
+    };
+    function changeRoleSimpleYes() {
+        f_teamview.submit();
+    };
+    function changeRoleSimpleNo() {
+        document.getElementsByName('_role-' + _tw_ndx)[0].value = _tw_oldRole;
+    };
+
+    function excludeMember(_idUser) {
+        f_teamview.elements.namedItem("_op").value = "excludeMember";
+        f_teamview.elements.namedItem("_prm").value = _idUser;
+        f_teamview.elements.namedItem("_src").value = @Model._team.Id;
+        opnModalYNSimple(
+            "Do you really want to exclude @teamAlias member?",
+            "excludeMember",
+            "@bsAlias - @teamsAlias"
+        );
+    };
+    function excludeMemberSimpleYes() {
+        f_teamview.submit();
+    };
+    function excludeMemberSimpleNo() {
+        return;
+    };
+
+    function teamInvitationAdd() {
+        opnModalYN("@bsAlias - @teamsAlias",
+            "Do you want to create new invitation?",
+            "",
+            "teamInvitationAdd",
+            1,
+            "Enter new invitation e-mail");
+    };
+    function teamInvitationAddYes(resType, resVal) {
+
+        f_teamview.elements.namedItem("_op").value = "addInvitation";
+        f_teamview.elements.namedItem("_prm").value = resVal;
+        f_teamview.elements.namedItem("_src").value = @Model._team.Id;
+
+        opnModalYN("@bsAlias - @teamsAlias",
+            "Do you want to add a personalized message to an invitation e-mail?",
+            "",
+            "teamInvitationAddMessage",
+            10,
+            "Enter personalization remark");
+    };
+    function teamInvitationAddMessageYes(resType, resVal) {
+        f_teamview.elements.namedItem("_prm2").value = resVal;
+        f_teamview.submit();
+        return;
+    };
+    function teamInvitationAddMessageNo(resType, resVal) {
+        f_teamview.submit();
+        return;
+    };
+
+    function cancelInvite(id_inv, user_email) {
+        f_teamview.elements.namedItem("_op").value = "cancelInvite";
+        f_teamview.elements.namedItem("_prm").value = id_inv;
+        f_teamview.elements.namedItem("_src").value = @Model._team.Id;
+        opnModalYNSimple(
+            "Do you really want to cancel the invitation for " + user_email + "?",
+            "cancelInvite",
+            "@bsAlias - @teamsAlias"
+        );
+    };
+    function cancelInviteSimpleYes() {
+        f_teamview.submit();
+    };
+    function cancelInviteSimpleNo() {
+        return;
+    };
+
+    function teamMarkAdd() {
+        opnModalYN("@bsAlias - @teamsAlias",
+            "Do you want to add new @markAlias to this @teamAlias?",
+            "",
+            "teamMarkAdd",
+            1,
+            "Enter @markAlias name");
+    };
+    function teamMarkAddYes(resType, resVal) {
+        f_teamview.elements.namedItem("_op").value = "addMark";
+        f_teamview.elements.namedItem("_prm").value = resVal;
+        f_teamview.elements.namedItem("_src").value = @Model._team.Id;
+        f_teamview.submit();
+        return;
+    };
+
+    function excludeMark(id_mark) {
+        f_teamview.elements.namedItem("_op").value = "excludeMark";
+        f_teamview.elements.namedItem("_prm").value = id_mark;
+        f_teamview.elements.namedItem("_src").value = @Model._team.Id;
+        opnModalYNSimple(
+            "Do you really want to exclude @markAlias from this @teamAlias?",
+            "excludeMark",
+            "@bsAlias - @teamsAlias"
+        );
+    };
+    function excludeMarkSimpleYes() {
+        f_teamview.submit();
+    };
+    function excludeMarkSimpleNo() {
+        return;
+    };
+
+    var _oldCnfValue = "";
+    var _elIndex = 0;
+
+    function updateConfigValue(id_team, id_cnf, cnfName, elIndex, oldCnfValue) {
+        _oldCnfValue = oldCnfValue;
+        _elIndex = elIndex;
+        var nn = document.getElementById("cnfVal" + _elIndex).value;
+
+        f_teamview.elements.namedItem("_op").value = "updateConfigValue";
+        f_teamview.elements.namedItem("_prm").value = id_cnf;
+        f_teamview.elements.namedItem("_src").value = id_team;
+        f_teamview.elements.namedItem("_prm2").value = nn;
+        opnModalYNSimple(
+            "Do you really want to update " + cnfName + " for this @teamAlias?",
+            "updateConfigValue",
+            "@bsAlias - @teamsAlias"
+        );
+    };
+    function updateConfigValueSimpleYes() {
+        f_teamview.submit();
+    };
+    function updateConfigValueSimpleNo() {
+        document.getElementById("cnfVal" + _elIndex).value = _oldCnfValue;
+        return;
+    };
+</script>

@@ -1,0 +1,225 @@
+﻿@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+    var reqcntnt = _lconsts.reqcntnt;
+
+    var bodyClass = "body-common";
+    var pName = (ViewData["title"] ?? "").ToString();
+
+    if (pName == "Home")
+    {
+        if (_lconsts.IsSignedIn)
+        {
+            bodyClass = "body-home-auth";
+        }
+        else
+        {
+            bodyClass = "body-home";
+        }
+    }
+
+    string bkgimg = "";
+    @if (GlobalParameters._isDevelopment)
+    {
+        bkgimg = "../favicons/team01.png";
+    }
+    else
+    {
+        bkgimg = "../favicons/wmn-happy.png";
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>@ViewData["Title"]&nbsp;-&nbsp;@_lconsts.mainTitle</title>
+    <!-- Font Awesome https://fontawesome.com/ -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
+    <!-- Google Fonts Roboto -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" />
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" href="~/mdb/@_lconsts.colourModel"
+          asp-append-version="true">
+    <!-- project specific section -->
+    <link rel="stylesheet" href="~/css/style.css"
+          asp-append-version="true">
+    <link rel="icon" type="image/x-icon" sizes="180x180" href="~/favicons/favicon.ico"
+          asp-append-version="true">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/favicons/apple-touch-icon.png"
+          asp-append-version="true">
+
+    <style>
+        .body-home-auth {
+            background-image: url('@bkgimg');
+            background-position: left @(_lconsts.bkgOffset)px top @_lconsts.NavHeight;
+            /*background-position: center;*/
+            background-size: auto 92vh;
+            /*repeating-radial-gradient(gray, gray 5px, white 5px, white 10px);*/ /*linear-gradient(45deg, green, green);*/ /*linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5));*/
+            /*background-color: rgb(252 252 252);*/
+            background-repeat: no-repeat;
+            /*background-size: cover;*/
+            background-attachment: fixed;
+            }
+        .body-home {
+            background-image: url('@bkgimg');
+            background-position: left @(_lconsts.bkgOffset)px top @_lconsts.NavHeight;
+            /*background-position: center;*/
+            background-size: auto 92vh;
+            /*repeating-radial-gradient(gray, gray 5px, white 5px, white 10px);*/ /*linear-gradient(45deg, green, green);*/ /*linear-gradient(to bottom, rgba(255,255,0,0.5), rgba(0,0,255,0.5));*/
+            /*background-color: rgb(252 252 252);*/
+            background-repeat: no-repeat;
+            /*background-size: cover;*/
+            background-attachment: fixed;
+        }
+        /* sticky table headers and paging*/
+        .table-for-sticky {
+            height: calc(100vh - @_lconsts.NavHeight);
+            position: relative;
+            overflow: auto;
+        }
+        .table > thead > tr > th {
+            position: sticky !important;
+            top: 0px !important;
+            /* https://cssgradient.io/ */
+            background: rgba(240,240,240,1);
+            background: linear-gradient(0deg, @_lconsts.baseColor 5%, rgba(240,240,240,1) 5%, @_lconsts.TableHeadAndPagingColor 100%);
+            height: @_lconsts.NavHeight;
+        }
+        .text-th {
+            color: WindowText !important;
+            mix-blend-mode: darken !important;
+        }
+        .text-th:hover {
+            color: WindowText !important;
+            mix-blend-mode: darken !important;
+        }
+        .text-darken {
+            color: WindowText !important;
+            mix-blend-mode: darken !important;
+        }
+        #pageBarBottom {
+            background: @_lconsts.baseColor;
+            background: linear-gradient(180deg, @_lconsts.baseColor 5%, rgba(240,240,240,1) 5%, @_lconsts.TableHeadAndPagingColor 100%);
+            height: @_lconsts.NavHeight;
+        }
+    </style>
+</head>
+
+<body class="@bodyClass bg-image" id="thisbody"
+      style="overflow-y: auto;">
+
+    <!-- jQuery for Microsoft needs -->
+    <script type="text/javascript" src="~/lib/jquery/dist/jquery.min.js"
+            asp-append-version="true"></script>
+
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="~/mdb/mdb.min.js"
+            asp-append-version="true"></script>
+    <script type="text/javascript" src="~/mdb/color-picker.min.js"
+            asp-append-version="true"></script>
+
+    <!-- Microsoft SignalR and parameters for it and activation and actualization scripts -->
+    <script type="text/javascript" src="~/js/signalr/dist/browser/signalr.js"
+            asp-append-version="true"></script>
+    <script type="text/javascript">
+        const _serverAndClientTimeout = @_lconsts.serverAndClientTimeout;
+        const _serverAndClientkeepAliveInterval = @_lconsts.serverAndClientkeepAliveInterval;
+    </script>
+
+    @*compiled TypeScript staff for this application*@
+    <script type="text/javascript" src="~/js/VFDstaff.js"
+            asp-append-version="true">
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript" src="~/js/site.js"
+            asp-append-version="true"></script>
+
+    @if (!reqcntnt)
+    {
+        <!-- modal dialogs for all the system -->
+        <partial name="~/Pages/Shared/_modalYesNo.cshtml" />
+        <script type="text/javascript" src="~/js/_modalYesNo.js"
+                asp-append-version="true"></script>
+
+        <partial name="~/Pages/Shared/_modalYesNoSimple.cshtml" />
+        <script type="text/javascript" src="~/js/_modalYesNoSimple.js"
+                asp-append-version="true"></script>
+
+        <!-- dual sidenav system -->
+        <script type="text/javascript">
+        let medianLine = @_lconsts.medianLine;
+        let wdf = window.innerWidth;
+        if (wdf < medianLine) {
+            (document.getElementsByTagName("BODY")[0]).className = "body-common";
+        };
+        </script>
+        @await Html.PartialAsync("~/Pages/Shared/SideBars/_leftNavbar.cshtml", ViewData)
+        @await Html.PartialAsync("~/Pages/Shared/SideBars/_rightNavbar.cshtml", ViewData)
+    }
+    <div id="courtine" class="courtine"></div><!-- for all needs to block the page by var document.getElementById("courtine").classList.toggle("opened"); -->
+    <div class="container-fluid mx-0 px-0">
+        <main role="main">
+            <nav id="pageitself">
+                @if (!reqcntnt)
+                {
+                    <nav class="navbar-dark"
+                         style="background-color: @_lconsts.baseColor">
+                        <div class="container-fluid d-flex justify-content-between mx-0"
+                             style="padding-left: 0em; padding-right: 0.1em;">
+                            <div class="flex-row d-flex">
+                                <partial name="~/Pages/Shared/SideBars/_leftNavbarCall.cshtml" />
+                            </div>
+                            <div class="flex-row d-flex navbar-brand">
+                                @if (_lconsts.IsSignedIn)
+                                {
+                                    <span>@ViewData["Title"]&nbsp;-&nbsp;</span>
+                                    <i class="me-2">@_lconsts.user.FullName</i>
+                                }
+                                else
+                                {
+                                    <strong onclick="opnCookieWarn()">Welcome</strong>
+                                }
+                            </div>
+                            <div class="flex-row d-flex">
+                                <partial name="~/Pages/Shared/SideBars/_rightNavbarCall.cshtml" />
+                            </div>
+                        </div>
+                    </nav>
+                }
+                <div class="container-fluid mx-0 px-0">
+                    @RenderBody()
+                </div>
+            </nav>
+        </main>
+    </div>
+    <partial name="~/Pages/Shared/_pageActivation.cshtml" />
+
+    @if (!reqcntnt)
+    {
+        <!-- tabs navigation support -->
+        <script type="text/javascript" src="~/js/mdbTabs.js"
+                asp-append-version="true"></script>
+
+        <!-- left navigation support -->
+        <script type="text/javascript" src="~/js/leftNavbar.js"
+                asp-append-version="true"></script>
+    }
+    <script type="text/javascript">
+        bkgOffset = @_lconsts.bkgOffset;
+    </script>
+    <script>
+        // Check that service workers are supported
+        if ('serviceWorker' in navigator) {
+            // Use the window load event to keep the page load performant
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
+    </script>
+</body>
+</html>

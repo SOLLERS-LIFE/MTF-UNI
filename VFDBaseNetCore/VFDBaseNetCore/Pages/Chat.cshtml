@@ -1,0 +1,24 @@
+﻿@page
+@model MTF.Pages.ChatModel
+
+@{
+    ViewData["Title"] = Model.PageName;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    var user = await Model._userManager.GetUserAsync(User);
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+
+<!-- Chat Body -->
+<div class="container-fluid pt-sm-5 px-sm-5">
+    <div class="d-sm-flex flex-sm-row pb-sm-2">
+        <input type="button" id="sendButton" value="Send" />
+        <textarea class="form-control" rows="5" id="messageInput" placeholder="<Ctrl+Enter> to send message"></textarea>
+    </div>
+    <div class="d-sm-flex flex-sm-row">
+        <ul id="messagesList"></ul>
+    </div>
+</div>
+<script type="text/javascript" src="~/js/chat.js" asp-append-version="true"></script>
+<!-- Chat Body END-->

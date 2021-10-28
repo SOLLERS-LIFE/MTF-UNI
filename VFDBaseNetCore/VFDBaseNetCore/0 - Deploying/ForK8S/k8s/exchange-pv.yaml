@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: exchange
+  labels:
+    component: exchange-space
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1024Mi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: bosun-01.sollers-sftdev.lab
+    path: "/stores/exchange"

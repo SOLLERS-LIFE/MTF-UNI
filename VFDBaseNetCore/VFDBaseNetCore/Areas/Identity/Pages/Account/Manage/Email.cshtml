@@ -1,0 +1,48 @@
+﻿@page
+@model EmailModel
+@{
+    ViewData["Title"] = "Manage Email";
+    ViewData["ActivePage"] = ManageNavPages.Email;
+
+    var id = @Model._commonUser.Id;
+    ViewData["userId"] = id;
+    ViewData["userName"] = @Model._commonUser.UserName;
+}
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+
+<div class="row">
+    <div class="col-sm-6">
+        <h4 class="pb-0 mb-0">@ViewData["Title"]</h4>
+        <form id="email-form" method="post"
+              class="px-0 py-1">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group mb-2">
+                <label class="form-label" asp-for="Email"></label>
+                @if (Model.IsEmailConfirmed)
+                {
+                    <div class="input-group">
+                        <input asp-for="Email" class="form-control-plaintext text-primary" readonly />
+                    </div>
+                }
+                else
+                {
+                    <input asp-for="Email" class="form-control-plaintext text-primary" readonly />
+                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" asp-route-id="@ViewData["userId"]"
+                            class="btn btn-link">
+                        Send verification email
+                    </button>
+                }
+            </div>
+            <div class="form-group mb-2">
+                <label class="form-label" asp-for="Input.NewEmail"></label>
+                <input asp-for="Input.NewEmail" class="form-control" />
+                <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
+            </div>
+            <button id="change-email-button" type="submit"
+                    asp-page-handler="ChangeEmail" asp-route-id="@ViewData["userId"]"
+                    class="btn btn-primary mt-2">
+                Change email
+            </button>
+        </form>
+    </div>
+</div>

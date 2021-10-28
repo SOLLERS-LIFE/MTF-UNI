@@ -1,0 +1,169 @@
+﻿@page
+@model MTF.Areas.Logging.Pages.ClaimsLogModel
+@{
+    //var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var invSortDirection = @Model._invariants.SortDirection ?? "_desc";
+    invSortDirection = invSortDirection == "_desc" ? "_" : "_desc";
+}
+
+@using (Html.BeginForm("ClaimsLog", "", FormMethod.Post,
+             new { id = "ClaimsLogForm", name = "ClaimsLogForm" }
+             )
+)
+{
+    <input type="hidden" asp-for="@Model._operation._op"
+           name="_op" , id="_op" />
+    <input type="hidden" asp-for="@Model._operation._src"
+           name="_src" , id="_src" />
+    <input type="hidden" asp-for="@Model._operation._prm"
+           name="_prm" , id="_prm" />
+    <input type="hidden" asp-for="@Model._operation._prm2"
+           name="_prm2" , id="_prm2" />
+}
+
+<div class="container-fluid mx-0 px-0">
+    <partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+    <div class="table-responsive overflow-auto table-for-sticky">
+        <table class="table table-sm table-striped table-hover table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="align-middle" scope="col" style="width: 15%;">
+                        <a class="text-th"
+                           asp-page="./ClaimsLog"
+                           asp-route-workFlowId="@Model._invariants.WorkFlowId"
+                           asp-route-SortOrder="sortA"
+                           asp-route-pageIndex=1>
+                            @Html.DisplayNameFor(model => model.ClaimsLogPage[0].logged)
+                            @if (Model._invariants.SortOrder == "sortA")
+                            {
+                                if (Model._invariants.SortDirection == "_")
+                                {
+                                    <span class="fas fa-sort-alpha-down fa-lg"></span>
+                                }
+                                else
+                                {
+                                    <span class="fas fa-sort-alpha-down-alt fa-lg"></span>
+                                }
+                            }
+                        </a>
+                    </th>
+                    <th class="align-middle" scope="col" style="width: 25%">
+                        <a class="text-th"
+                           asp-page="./ClaimsLog"
+                           asp-route-workFlowId="@Model._invariants.WorkFlowId"
+                           asp-route-SortOrder="sortB"
+                           asp-route-pageIndex=1>
+                            @Html.DisplayNameFor(model => model.ClaimsLogPage[0].author)
+                            @if (Model._invariants.SortOrder == "sortB")
+                            {
+                                if (Model._invariants.SortDirection == "_")
+                                {
+                                    <span class="fas fa-sort-alpha-down fa-lg"></span>
+                                }
+                                else
+                                {
+                                    <span class="fas fa-sort-alpha-down-alt fa-lg"></span>
+                                }
+                            }
+                        </a>
+                    </th>
+                    <th class="align-middle" scope="col" style="width: 15%">
+                        <a class="text-th"
+                           asp-page="./ClaimsLog"
+                           asp-route-workFlowId="@Model._invariants.WorkFlowId"
+                           asp-route-SortOrder="sortC"
+                           asp-route-pageIndex=1>
+                            @Html.DisplayNameFor(model => model.ClaimsLogPage[0].viewed)
+                            @if (Model._invariants.SortOrder == "sortC")
+                            {
+                                if (Model._invariants.SortDirection == "_")
+                                {
+                                    <span class="fas fa-sort-alpha-down fa-lg"></span>
+                                }
+                                else
+                                {
+                                    <span class="fas fa-sort-alpha-down-alt fa-lg"></span>
+                                }
+                            }
+                        </a>
+                    </th>
+                    <th scope="col" class="align-middle">
+                        <div class="text-th">
+                            @Html.DisplayNameFor(model => model.ClaimsLogPage[0].claimText)
+                        </div>
+                    </th>
+                    <th class="align-middle" scope="col" style="width: 2%">
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="blue-grey lighten-5">
+                @for (int i = 0; i < Model.ClaimsLogPage.Count; i++) //var item in Model.CommonUserPg)
+                {
+                    <tr ondblclick="eventsLogDblclick('@Model.ClaimsLogPage[i].ID')">
+                        <td class="td-wrapword mx-0 px-0 text-center">
+                            <div class="font-weight-bolder">
+                                <span class="text-info">@Html.DisplayFor(m => m.ClaimsLogPage[i].logged)</span>
+                            </div>
+                        </td>
+                        <td class="td-wrapword ms-1 me-0 ps-1 pe-0">
+                            <div class="font-weight-bolder">
+                                @Html.DisplayFor(m => m.ClaimsLogPage[i].author)
+                            </div>
+                        </td>
+                        <td class="td-wrapword ms-1 me-0 ps-1 pe-0">
+                            <div class="font-weight-bolder">
+                                <span class="text-info">@Html.DisplayFor(m => m.ClaimsLogPage[i].viewed)</span>
+                            </div>
+                        </td>
+                        <td class="td-wrapword ms-1 me-0 ps-1 pe-0">
+                            <div class="font-weight-bolder">
+                                <span>@Html.DisplayFor(m => m.ClaimsLogPage[i].claimText, new { @class = "text-break" })</span>
+                            </div>
+                        </td>
+                        <td class="td-wrapword text-center ms-0 me-0 ps-0 pe-0">
+                            <input type="checkbox" asp-for="@Model.ClaimsLogPage[i].marked"
+                                   id="marked-@Model.ClaimsLogPage[i].ID"
+                                   class="me-1"
+                                   onchange="selectionToggled(@Model.ClaimsLogPage[i].ID)" />
+                            <a asp-area="Logging" asp-page="/ClaimsLogEntry" asp-route-recId="@Model.ClaimsLogPage[i].ID"
+                               class="text-info">
+                                <span class="fas fa-external-link-alt fa-lg" aria-hidden="true"></span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+
+            </tfoot>
+        </table>
+    </div>
+</div>
+<partial name="./_ClaimsSearchSortAndPagingAdv.cshtml" />
+
+<script type="text/javascript">
+    function eventsLogDblclick(entryId) {
+        window.location.href = '/Logging/ClaimsLogEntry?recId=' + entryId;
+    };
+
+    function selectionToggled(i) {
+        fetch("/Logging/ClaimsLog?handler=SelectionToggle&id=" + i)
+            .then((response) => {
+                return response.text();
+            })
+            .then((result) => {
+                if (result != "OK") {
+                    console.error(result);
+                    alert(result);
+                    document.activeElement.checked = !document.activeElement.checked;
+                }
+            });
+    };
+
+    // block browser vertical scrollbar
+    unloadBrowserScrollBars();
+</script>

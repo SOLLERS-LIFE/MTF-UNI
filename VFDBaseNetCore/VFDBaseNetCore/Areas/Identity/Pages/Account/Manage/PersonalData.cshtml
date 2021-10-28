@@ -1,0 +1,29 @@
+﻿@page
+@model PersonalDataModel
+@{
+    ViewData["Title"] = "Personal Data";
+    ViewData["ActivePage"] = ManageNavPages.PersonalData;
+
+    var id = @Model._commonUser.Id;
+    ViewData["userId"] = id;
+    ViewData["userName"] = @Model._commonUser.UserName;
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+<div class="row">
+    <div class="col-sm-6">
+        <h4 class="pb-0 mb-0">@ViewData["Title"]</h4>
+        <p class="px-0 py-1">This account contains personal data. This page allows to download or delete that data.</p>
+        <p class="px-0">
+            <strong class="px-0">Deleting this data will permanently remove account, and this cannot be recovered.</strong>
+        </p>
+        <form id="download-data" asp-page="DownloadPersonalData" method="post" class="form-group"
+              asp-route-id="@ViewData["userId"]">
+            <button class="btn btn-primary mt-2" type="submit">Download</button>
+        </form>
+        <a id="delete" asp-page="DeletePersonalData" class="btn btn-primary mt-2"
+           asp-route-id="@ViewData["userId"]">
+            Delete
+        </a>
+    </div>
+</div>

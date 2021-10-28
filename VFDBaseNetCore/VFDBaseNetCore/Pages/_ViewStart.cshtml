@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["_lconsts"] = new MTF.Utilities.layoutConsts(await UserManager.GetUserAsync(User),
+                                                                  SignInManager.IsSignedIn(User),
+                                                                  await AuthorizationService.AuthorizeAsync(
+                                                                  User,
+                                                                  UserManager.GetUserId(User),
+                                                                  AuthOperations.NoRestrictions
+                                                                  ),
+                                                                  (ViewData["reqcontent"] ?? "").ToString() == "1",
+                                                                  await AuthorizationService.AuthorizeAsync(
+                                                                  User,
+                                                                  UserManager.GetUserId(User),
+                                                                  AuthOperations.IsTester
+                                                                  )
+                                                 );
+    Layout = "/Pages/Shared/_Layout.cshtml";
+}

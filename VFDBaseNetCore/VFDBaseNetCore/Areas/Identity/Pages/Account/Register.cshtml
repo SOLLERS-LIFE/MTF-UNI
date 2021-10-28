@@ -1,0 +1,108 @@
+﻿@page
+@model RegisterModel
+
+@using AspNetCore.ReCaptcha
+@using Microsoft.Extensions.Options
+@inject IOptions<ReCaptchaSettings> ReCaptchaSettings
+@addTagHelper *, AspNetCore.ReCaptcha
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "./_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <h5 class="">Please register new account</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <form id="reg-user-frm"
+                  asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group mb-2">
+                    <label class="form-label" asp-for="Input.FullName"></label>
+                    <input asp-for="Input.FullName" class="form-control" />
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="form-label" asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="form-label" asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="form-label" asp-for="Input.ConfirmPassword"></label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <recaptcha language="en-GB" />
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <button id="nacsv" type="submit" class="btn btn-block btn-primary">
+                            Save
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function onSubmit_ruf(token) {
+            document.getElementById("reg-user-frm").submit();
+        }
+    </script>
+
+
+    @if ((Model.ExternalLogins?.Count ?? 0) == 0)
+    {
+        <div class="row mt-2">
+            <div class="col-md-4">
+                <span>
+                    There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
+                    for details on setting up this ASP.NET application to support logging in via external services.
+                </span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <form id="external-account"
+              asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl"
+              method="post"
+              class="mt-2">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Or </strong><span>register your account from some other service to log in</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    @foreach (var provider in Model.ExternalLogins)
+                    {
+                        <div class="row">
+                            <div class="col-6">
+                                <button type="submit" class="btn btn-block btn-primary"
+                                        name="provider" value="@provider.Name"
+                                        title="Log in using your @provider.DisplayName account">
+                                    <span>@provider.DisplayName</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </form>
+    }
+</div>

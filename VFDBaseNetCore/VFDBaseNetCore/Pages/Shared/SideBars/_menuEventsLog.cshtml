@@ -1,0 +1,106 @@
+﻿@model MTF.Areas.Logging.Pages.EventsLogModel;
+
+@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+}
+<ul class="sidenav-menu">
+    <li class="sidenav-item">
+        <form class="form-inline mx-0 px-0" name="combinedSearch" id="combinedSearch"
+              asp-page="./EventsLog" method="post">
+            <!--  fictive input to pass values to post handlers -->
+            <input type="hidden" asp-for="@Model.CombinedFilter._CombinedFilter"
+                   name="_CombinedFilter" , id="_CombinedFilter" />
+            <input type="hidden" asp-for="@Model.CombinedFilter._updated"
+                   name="_updated" , id="_updated" />
+            <!--  fictive input to pass values to post handlers END -->
+            <a class="sidenav-link active ps-2" style="cursor: pointer;" onclick="_submit_combinedSearch()">
+                <span class="fas fa-filter fa-xs fa-fw me-2"></span>
+                <span>Combined Search</span>
+            </a>
+            <script type="text/javascript">
+                function _submit_combinedSearch() {
+                    var f = document.forms.namedItem("combinedSearch").elements;
+                    var txt = f.namedItem("_CombinedFilter").value;
+                    opnModalYN("Please replace current filter", "", txt, "combinedSearch", 10);
+                };
+                function combinedSearchYes(resType, resVal) {
+                    var f = document.forms.namedItem(resType);
+                    if (resType == "combinedSearch") {
+                        f.elements.namedItem("_CombinedFilter").value = resVal;
+                        f.elements.namedItem("_updated").value = 1;
+                        f.submit();
+                    }
+                };
+            </script>
+        </form>
+    </li>
+    <li class="sidenav-item">
+        <a class="sidenav-link active ps-2"
+           asp-page="./EventsLog"
+           asp-route-searchString=""
+           asp-route-pageIndex="1"
+           asp-route-pageSize="@Model.pgParms.CurrentPageSize"
+           asp-route-workFlowId="@Model.pgParms.WorkFlowId"
+           asp-route-startDate="@Model.pgParms.CurrentStartDate"
+           asp-route-prevStartDate="@Model.pgParms.CurrentStartDate"
+           asp-route-clearing="1">
+            <span class="fas fa-times fa-fw me-2"></span>
+            <span>Clear Searches</span>
+        </a>
+    </li>
+</ul>
+<form class="form-inline mx-1" name="searchCaption-eln" id="searchCaption-eln"
+      asp-page="./EventsLog" method="get">
+    <!--  fictive input to pass values to get handlers -->
+    <input type="hidden" asp-for="@Model.pgParms.WorkFlowId"
+            name="workFlowId" , id="workFlowId" />
+    <input type="hidden" asp-for="@Model.pgParms.CurrentPageSize"
+            name="pageSize" , id="pageSize" />
+    <input type="hidden" asp-for="@Model.pgParms.PageIndex"
+            name="pageIndex" , id="pageIndex" />
+    <input type="hidden" asp-for="@Model.pgParms.CurrentStartDate"
+            name="prevStartDate" , id="prevStartDate" />
+    <!--  fictive input to pass values to get handlers END -->
+    <span class="navbar-text mb-2">From:</span>
+    <select class="select-box mb-2" style="min-width: 100%" aria-label="Search"
+            name="startDate" id="startDate"
+            asp-for="@Model.pgParms.CurrentStartDate" asp-items="@Model.AvailableStartDates"
+            onchange="_submit_startDate()">
+    </select>
+    <script>
+        function _submit_startDate() {
+            var f = document.forms.namedItem("searchCaption-eln").elements;
+            f.namedItem("pageIndex").value = 1;
+            document.forms.namedItem("searchCaption-eln").submit();
+        }
+    </script>
+    <span class="fas fa-search fa-lg  mb-2"
+            style="cursor: pointer" onclick="_submit_searchString_eln()">
+    </span>
+    <select class="select-box mb-2" style="min-width: 100%" aria-label="Search"
+            name="searchField" id="searchField"
+            asp-for="@Model.pgParms.CurrentSearchField" asp-items="@Model.AvailableSearchFields"
+            onchange="_submit_searchField_eln()">
+    </select>
+    <script>
+        function _submit_searchField_eln() {
+            var f = document.forms.namedItem("searchCaption-eln").elements;
+            f.namedItem("pageIndex").value = 1;
+            f.namedItem("searchString").value = "";
+            document.forms.namedItem("searchCaption-eln").submit();
+        }
+    </script>
+    <input class="select-box mb-2" style="min-width: 100%"
+            type="text" placeholder="Search @Model.pgParms.CurrentSearchField"
+            aria-label="Search"
+            name="searchString" id="searchString"
+            value="@Model.pgParms.CurrentFilter"
+            onchange="_submit_searchString_eln()" />
+    <script>
+        function _submit_searchString_eln() {
+            var f = document.forms.namedItem("searchCaption-eln").elements;
+            f.namedItem("pageIndex").value = 1;
+            document.forms.namedItem("searchCaption-eln").submit();
+        }
+    </script>
+</form>

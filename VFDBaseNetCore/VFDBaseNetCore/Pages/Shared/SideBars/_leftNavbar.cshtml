@@ -1,0 +1,152 @@
+﻿@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+    var pName = (ViewData["title"] ?? "").ToString();
+    var mb = "";
+
+    if (_lconsts.IsSignedIn)
+    { mb = "mb-3"; };
+}
+
+<!-- side navbar definition -->
+<nav id="sidenav01"
+     class="sidenav"
+     style="background-color: @_lconsts.baseColor"
+     data-mdb-color="light"
+     data-mdb-mode="side" data-mdb-content="#pageitself"
+     data-mdb-hidden="true"
+     data-mdb-accordion="true"
+     data-mdb-scroll-container="#scroll-container"
+     data-mdb-transition-duration="@_lconsts.sidenavTransitionDuration"
+     data-mdb-width="@_lconsts.sidenavWidth">
+    <script type="text/javascript">
+        function actionOnSidenav() {
+            if (window.innerWidth == null) {
+                return;
+            };
+            if (window.innerWidth > @_lconsts.medianLine) {
+                document.getElementById('selfToggler').click();
+            };
+        };
+    </script>
+
+    <div id="scroll-container" class="sidenav-menu">
+        <div class="sidenav-item">
+            <div id="leftNavbarToggler01"
+                 data-mdb-toggle="sidenav"
+                 data-mdb-target="#sidenav01"
+                 aria-controls="#sidenav01"
+                 aria-haspopup="true"
+                 style="cursor: pointer;"
+                 onclick="leftNavbarTogglerExt()"
+                 class="navbar-brand ps-1"
+                 title="@_lconsts.vrs">
+                <i class="fas fa-bars fa-fw me-1"></i>
+                <span>@_lconsts.mainTitle</span>
+            </div>
+        </div>
+        <div class="sidenav-item">
+            <a class="sidenav-link active py-3 ps-2
+                bg-intensive
+                border-top border-bottom border-2 rounded-0 @mb"
+               asp-area="" asp-page="/Index">
+                <i class="fas fa-home fa-fw me-2"></i>
+                <span>Home</span>
+            </a>
+            <div id="OpSpinner" class="d-inline-flex justify-content-start align-items-center d-none ms-1 mb-2">
+                <div class="spinner-grow text-info me-2" style="width: 3em; height: 2em;" role="status"></div>
+                <strong class="text-info">We are preparing your data...</strong>
+            </div>
+        </div>
+        <div class="sidenav-item">
+            <a id="selfToggler" class="sidenav-link d-none"
+               data-mdb-toggle="sidenav" data-mdb-target="#sidenav01"
+               aria-controls="#sidenav01" aria-haspopup="true">
+            </a>
+        </div>
+        @if (_lconsts.IsSignedIn)
+        {
+            if (pName == "Under Construction")
+            {
+                @await Html.PartialAsync("./_menuUC.cshtml", ViewData);
+            }
+            else if (pName == "Users List")
+            {
+                @await Html.PartialAsync("./_menuUsersList.cshtml", ViewData);
+            }
+            else if (pName == "Home")
+            {
+                @await Html.PartialAsync("./_menuHome.cshtml", ViewData);
+            }
+            else if (pName == "Roles List")
+            {
+                @await Html.PartialAsync("./_menuRolesList.cshtml", ViewData);
+            }
+            else if (pName == "Events Log")
+            {
+                @await Html.PartialAsync("./_menuEventsLog.cshtml", ViewData);
+            }
+            else if (pName == "Claims Entry")
+            {
+                @await Html.PartialAsync("./_menuClaimsLogEntry.cshtml", ViewData);
+            }
+            else if (pName == GlobalParameters.BusinessStructureAlias)
+            {
+                @await Html.PartialAsync("~/Areas/ApplicationDB/Pages/BS/sideMenues/_menuIndex.cshtml", ViewData);
+            }
+            else if (pName == "My " + GlobalParameters.MarksNameAlias)
+            {
+                @await Html.PartialAsync("~/Areas/ApplicationDB/Pages/BS/sideMenues/_menuMarkers.cshtml", ViewData);
+            }
+            else if (pName == "My " + GlobalParameters.TeamsNameAlias)
+            {
+                @await Html.PartialAsync("~/Areas/ApplicationDB/Pages/BS/sideMenues/_menuTeams.cshtml", ViewData);
+            }
+            else if (pName == "About " + GlobalParameters.TeamNameAlias)
+            {
+                @await Html.PartialAsync("~/Areas/ApplicationDB/Pages/BS/sideMenues/_menuTeamView.cshtml", ViewData);
+            }
+            else if (pName == "Claims Log")
+            {
+                @await Html.PartialAsync("./_menuClaimsList.cshtml", ViewData);
+            }
+            else if (pName == "About " + GlobalParameters.MarkNameAlias)
+            {
+                @await Html.PartialAsync("~/Areas/ApplicationDB/Pages/BS/sideMenues/_menuMarkerView.cshtml", ViewData);
+            }
+
+        }
+        else
+        {
+            <div class="sidenav-item">
+                <a class="sidenav-link active ps-2"
+                   asp-area="Identity" asp-page="/Account/Login"
+                   title="Login as existent user or Create new account">
+                    <span class="fas fa-user-check fa-fw me-2"></span>
+                    <span>Login</span>
+                </a>
+            </div>
+        }
+        @if (_lconsts.IsSignedIn)
+        {
+            <div class="sidenav-item">
+                <a class="sidenav-link active py-3 ps-2 mt-3
+                        bg-intensive
+                        border-top border-bottom border-2 rounded-0"
+                   style="cursor: pointer;"
+                   onclick="pm_toggle()">
+                    <i class="fas fa-user-tie fa-fw me-2"></i>
+                    <span>Personal menu</span>
+                </a>
+            </div>
+        }
+        else
+        {
+            <span class="border-bottom border-2 rounded-0"></span>
+        }
+    </div>
+</nav>
+<script type="text/javascript">
+    function toggleWait() {
+        document.getElementById("OpSpinner").classList.toggle("d-none");
+    }
+</script>

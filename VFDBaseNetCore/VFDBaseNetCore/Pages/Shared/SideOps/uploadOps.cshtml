@@ -1,0 +1,11 @@
+﻿@page
+@model uploadOpsModel
+@{
+    Layout = "";
+}
+@Html.AntiForgeryToken()
+
+<div class="container-fluid">
+    <partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+    <p>Please wait while we are preparing things for you..</p>
+</div>

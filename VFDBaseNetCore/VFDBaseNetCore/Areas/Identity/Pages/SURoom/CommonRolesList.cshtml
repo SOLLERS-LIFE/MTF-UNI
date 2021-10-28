@@ -1,0 +1,86 @@
+﻿@page
+@model MTF.Areas.Identity.Pages.SURoom.CommonRolesListModel
+@{
+    ViewData["Title"] = Model.PageName;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+}
+
+@using (Html.BeginForm("CommonRolesList", "", FormMethod.Post,
+                   new { id = "pageForm", name = "pageForm" }
+                  )
+)
+{
+    @Html.HiddenFor(m => m.input.actionName)
+    @Html.HiddenFor(m => m.input.actionParm)
+    @Html.HiddenFor(m => m.input.actionParm2)
+
+    <div class="container-fluid mt-1">
+        <partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+        @{ var sz = Model.input.roles.Count(); }
+        @for (int i = 0; i < sz; i++)
+        {
+            <div class="h-100 d-inline-flex flex-row align-items-start mb-1">
+                <div class="flex-fill ms-auto">
+                    <span class="me-1">
+                        @Html.TextBoxFor(m => m.input.roles[i].Name,
+                            new { onchange = $"updaterolename('{Model.input.roles[i].Id}',{i},'{Model.input.roles[i].Name}')" })
+                    </span>
+                    <div class="d-inline-flex align-middle text-center me-1">
+                        <a asp-page="./CommonUsersList"
+                            asp-route-searchRole="@Model.input.roles[i].Name">
+                            <span class="far fa-list-alt fa-lg mx-0 px-0"></span>
+                        </a>
+                        <span class="far fa-trash-alt fa-lg mx-0 px-0"
+                                style="cursor: pointer; position: relative; bottom: -0.2rem"
+                                onclick="deleteRole('@Model.input.roles[i].Id','@Model.input.roles[i].Name')">
+                        </span>
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+    <script type="text/javascript">
+        var oldname = "";
+        function updaterolename(rn, sn, oldn) {
+            var f = document.forms.namedItem("pageForm");
+            f.elements.namedItem("input.actionName").value = "renameRole";
+            f.elements.namedItem("input.actionParm").value = rn;
+            f.elements.namedItem("input.actionParm2").value = sn;
+            oldname = oldn;
+            var nn = f.elements.namedItem("input.roles[" + sn + "].Name").value;
+            opnModalYNSimple("Do you want to rename the role "+oldn+" as "+nn+"?","renameRole", "Role Renaming");
+        }
+        function renameRoleSimpleYes(str) {
+            var f = document.forms.namedItem("pageForm");
+            f.submit();
+        }
+        function renameRoleSimpleNo(str) {
+            var f = document.forms.namedItem("pageForm");
+            if (f.elements.namedItem("input.actionName").value == "renameRole") {
+                var i = f.elements.namedItem("input.actionParm2").value;
+                f.elements.namedItem("input.roles[" + i + "].Name").value = oldname;
+            }
+        }
+        function deleteRole(rid,nm) {
+            var f = document.forms.namedItem("pageForm");
+            f.elements.namedItem("input.actionName").value = "deleteRole";
+            f.elements.namedItem("input.actionParm").value = rid;
+            opnModalYNSimple("Do you want to delete the role " + nm + "?", "renameRole", "Role Deleting");
+        }
+    </script>
+}
+
+<!--partial name="~/Pages/Shared/_CommonFooter.cshtml"-->
+
+@{
+    ViewData["data-pageIdent"] = Model.PageName;
+    ViewData["data-avlMsg"] = "The subsystem '" + Model.PageName + "' you have requested is available now";
+}
+<script type="text/javascript">
+    function userDocumentIsOccuped(pageIdent) {
+        window.alert("The subsystem @Model.PageName is occuped now. You receive a notification when it be available.");
+        document.getElementById("courtine").classList.toggle("opened");
+    }
+</script>
+<partial name="~/Pages/Shared/_pageActualization.cshtml"/>

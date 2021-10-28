@@ -1,0 +1,14 @@
+{
+  "certificateSettings": {
+    "fileName": "mtfdemo.pfx",
+    "password": "AppHeadPassword",
+    "fileNameProduction": "mtfdemo.pfx",
+    "passwordProduction": "AppHeadPassword"
+  },
+  "portsSettings": {
+    "httpPort": 5000,
+    "httpsPort": 5001,
+    "httpPortProduction": 80,
+    "httpsPortProduction": 443
+  }
+}

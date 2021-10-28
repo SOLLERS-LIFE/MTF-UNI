@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: stores-pvc
+ annotations:
+   volume.beta.kubernetes.io/storage-class: safe-space-effective
+spec:
+ accessModes:
+  - ReadWriteMany
+ resources:
+   requests:
+     storage: 5Gi

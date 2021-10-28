@@ -1,0 +1,40 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: stores-bckp-full
+  namespace: sole-common
+  labels:
+    name: stores-bckp-full
+    app: stores-bckp-full
+spec:
+  schedule: "5 1 * * 0"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    metadata:
+      labels:
+        app: stores-bckp-full
+    spec:
+      parallelism: 1
+      completions: 1
+      backoffLimit: 0
+      template:
+        spec:
+          containers:
+          - name: stores-bckp-full
+            image: bosun-01.sollers-sftdev.lab:5000/mdb-probe:latest
+            imagePullPolicy: IfNotPresent
+            command: [ "/bin/bash", "-c", "--" ]
+            args: [ "./bitnami/mariadb/backup-sys/backup_databases_full.sh" ]
+            terminationMessagePolicy: FallbackToLogsOnError
+            volumeMounts:
+            - name: secundo
+              mountPath: /bitnami/mariadb
+              readOnly: false
+          restartPolicy: Never
+          terminationGracePeriodSeconds: 1800
+          volumes:
+          - name: secundo
+            persistentVolumeClaim:
+              claimName: data-stores-sollers-secondary-0

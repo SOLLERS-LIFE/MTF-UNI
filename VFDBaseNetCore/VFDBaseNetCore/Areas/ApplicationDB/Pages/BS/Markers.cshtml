@@ -1,0 +1,130 @@
+﻿@page
+@model MTF.Areas.ApplicationDB.BS.MarkersModel
+@{
+    var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var baseColor = MTF.GlobalParameters._baseColor;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var markAlias = MTF.GlobalParameters.MarkNameAlias;
+    var marksAlias = MTF.GlobalParameters.MarksNameAlias;
+    var bsAlias = MTF.GlobalParameters.BusinessStructureAlias;
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+@using (Html.BeginForm(pageName, "", FormMethod.Post,
+                  new { id = "opr01Form", name = "opr01Form" }
+                  )
+      )
+{
+    <input type="hidden" asp-for="@Model._operation._op"
+           name="_op" , id="_op" />
+    <input type="hidden" asp-for="@Model._operation._src"
+           name="_src" , id="_src" />
+    <input type="hidden" asp-for="@Model._operation._prm"
+           name="_prm" , id="_prm" />
+    <input type="hidden" asp-for="@Model._operation._prm2"
+           name="_prm2" , id="_prm2" />
+}
+<div class="container-fluid">
+    <div class="row">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="ApplicationDB" asp-page="/BS/index">@bsAlias</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><strong>My @marksAlias</strong></li>
+            </ol>
+        </nav>
+    </div>
+    @{ var sz = Model.MarksList.Count(); }
+    @for (int i = 0; i < sz; i++)
+    {
+        <div class="h-100 d-inline-flex flex-row align-items-start mb-1">
+            <div class="flex-fill ms-auto">
+                <span class="me-1">
+                    @Html.TextBoxFor(m => m.MarksList[i].mark_name,
+                            new { onchange = $"updateMarkName('{Model.MarksList[i].Id}',{i},'{Model.MarksList[i].mark_name}')", @style = "width: 25em" })
+                </span>
+                <span class="me-1">
+                    @Html.TextBoxFor(m => m.MarksList[i].team_name,
+                            new { @class = "", @style = "background-color: Green; color: White; width: 10em" })
+                </span>
+                <div class="d-inline-flex align-middle text-center me-1">
+                    @if (_lconsts.isSU)
+                    {
+                        <span class="far fa-trash-alt fa-lg mx-0 px-0 mb-2 me-1"
+                              style="cursor: pointer; position: relative; bottom: -0.2rem"
+                              onclick="deleteMark('@Model.MarksList[i].Id','@Model.MarksList[i].mark_name')">
+                        </span>
+                    }
+                    <a asp-page="./MarkerView"
+                       asp-route-id="@Model.MarksList[i].Id">
+                        <span class="far fa-list-alt fa-lg mx-0 px-0 me-1"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    function reqMarkName() {
+        opnModalYN("@bsAlias - @marksAlias",
+            "Do you want to create new @markAlias?",
+            "",
+            "reqMarkName",
+            1,
+            "Enter new @markAlias name");
+    };
+    function reqMarkNameYes(resType, resVal) {
+        var f = document.forms.namedItem("opr01Form");
+        f.elements.namedItem("_op").value = "addMark";
+        f.elements.namedItem("_prm").value = resVal;
+        f.submit();
+        return;
+    };
+
+    function deleteMark(markId, markName) {
+        var f = document.forms.namedItem("opr01Form");
+        f.elements.namedItem("_prm").value = markId;
+        opnModalYNSimple(
+            "Do you really want to delete @markAlias " + markName + "?",
+            "deleteMark",
+            "@bsAlias - @marksAlias"
+        );
+    };
+    function deleteMarkSimpleYes() {
+        var f = document.forms.namedItem("opr01Form");
+        f.elements.namedItem("_op").value = "deleteMark";
+        f.submit();
+        return;
+    };
+
+    var oldmarkname = "";
+    var markindex = 0;
+    function updateMarkName(rn, sn, oldn) {
+        var f = document.forms.namedItem("opr01Form");
+        f.elements.namedItem("_op").value = "renameMark";
+        f.elements.namedItem("_prm").value = rn;
+        markindex = sn;
+        oldmarkname = oldn;
+        var nn = document.getElementsByName("MarksList[" + sn + "].name")[0].value;
+        f.elements.namedItem("_prm2").value = nn;
+        opnModalYNSimple(
+            "Do you want to rename the @markAlias " + oldn + " as " + nn + "?",
+            "renameMark",
+            "@bsAlias - @marksAlias"
+        );
+    };
+    function renameMarkSimpleYes(str) {
+        var f = document.forms.namedItem("opr01Form");
+        f.submit();
+    }
+    function renameMarkSimpleNo(str) {
+        var f = document.forms.namedItem("opr01Form");
+        if (f.elements.namedItem("_op").value == "renameMark") {
+            document.getElementsByName("MarksList[" + markindex + "].name")[0].value = oldmarkname;
+        }
+    }
+
+</script>

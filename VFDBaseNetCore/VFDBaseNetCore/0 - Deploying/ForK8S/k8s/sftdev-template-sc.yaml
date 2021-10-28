@@ -1,0 +1,46 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1beta1
+metadata:
+  #name: safe-space-effective
+  #name: safe-space-hungry
+  name: simplest-unsafe
+  #name: test-options
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: kubernetes.io/glusterfs
+#reclaimPolicy: Retain
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+#volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+parameters:
+  # ===== heketi connection
+  resturl: "https://bosun-01.sollers-sftdev.lab:8080" 
+  restuser: "admin" 
+  secretName: "heketi-secret"
+  secretNamespace: "sole-common"
+  # ===== volume type 
+  clusterid: "4fe617a7cfa6f576e72f28d68c094440"
+  # safe-space-effective variant
+  #volumetype: "disperse:2:1"
+  # safe-space-hungry 
+  #volumetype: "replicate:3"
+  # simplest-not-safe
+  volumetype: "none"
+  # test-options
+  #volumetype: "disperse:2:1"
+  #volumetype: "replicate:3"
+  # ===== different glusterfs and heketi parameters for volumes here
+  # https://docs.gluster.org/en/latest/Administrator-Guide/Tuning-Volume-Options/
+  # https://github.com/heketi/heketi/blob/master/docs/admin/volume.md
+  # https://access.redhat.com/documentation/en-us/red_hat_gluster_storage/3.4/html/administration_guide/volume_option_table
+  #volumeoptions: "user.heketi.zone-checking strict,cluster.data-self-heal-algorithm reset,nfs.disable on,storage.reserve 5"
+  volumeoptions: "user.heketi.zone-checking none,cluster.favorite-child-policy mtime,cluster.data-self-heal-algorithm full"
+  # ===== naming conventions
+  #volumenameprefix: "safe-se--"
+  #volumenameprefix: "safe-sh--"
+  volumenameprefix: "unsafe--"
+  #volumenameprefix: "test--"
+  # ===== posix volume owner - auto generating range
+  gidMin: "40000"
+  gidMax: "50000"

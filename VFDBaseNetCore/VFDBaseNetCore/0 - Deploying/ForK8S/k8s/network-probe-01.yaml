@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-probe
+  namespace: sole-common
+  labels:
+    name: network-probe
+    app: network-probe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: network-probe
+  template:
+    metadata:
+      labels:
+        app: network-probe
+    spec:
+      containers:
+      - name: network-probe-ess
+        image: bosun-01.sollers-sftdev.lab:5000/mtf-probe:v1.00
+        imagePullPolicy: Always
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 60; done;" ]

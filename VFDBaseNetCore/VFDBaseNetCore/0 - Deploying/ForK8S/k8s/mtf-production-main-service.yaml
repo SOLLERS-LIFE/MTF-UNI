@@ -1,0 +1,19 @@
+# https://kubernetes.io/docs/tutorials/services/source-ip/
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mtf-production
+  name: mtf-production
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
+      nodePort: 31900
+  selector:
+    app: mtf-production
+

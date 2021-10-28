@@ -1,0 +1,112 @@
+﻿@page
+@model RolesModel
+@{
+    ViewData["Title"] = "Roles";
+    ViewData["ActivePage"] = ManageNavPages.Roles;
+
+    var id = @Model._commonUser.Id;
+    ViewData["userId"] = id;
+    ViewData["userName"] = @Model._commonUser.UserName;
+
+    int cntMRTI = Model.rolesToInclude.Count();
+    int cntRI = Model.rolesIncluded.Count();
+    int j = 0;
+}
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+
+@using (Html.BeginForm("UserRolesControl", "", FormMethod.Post,
+                new { id = "rolesForm", name = "rolesForm",
+                        @class = "px-0"}
+                )
+)
+{
+    @Html.HiddenFor(m => m.Input.userId)
+    @Html.HiddenFor(m => m.Input.roleToActOn)
+    @Html.HiddenFor(m => m.Input.roleIdToActOn)
+    @Html.HiddenFor(m => m.Input.action)
+    <div class="container-fluid px-0">
+    <h4 class="mb-3">Belongs to Roles</h4>
+    @for (int i = 0; i < cntRI; i++)
+    {
+    <div class="d-flex flex-row justify-content-start px-0">
+        <div style="width: 20%;">@Html.DisplayFor(m => m.rolesIncluded[i].Name)</div>
+        <div style="width: 5%;">
+            <snap class="text-primary fas fa-times fa-lg px-0"
+                    style="cursor: pointer"
+                    onclick="excludefromrole('@Model.rolesIncluded[i].Name',
+                                            '@Model.rolesIncluded[i].Id',
+                                            '@Model._commonUser.Id')">
+            </snap>
+        </div>
+        @{ j = ++i; }
+        @if (j < cntRI)
+        {
+            <div style="width: 20%;">@Html.DisplayFor(m => m.rolesIncluded[j].Name)</div>
+            <div style="width: 5%;">
+                <snap class="text-primary fas fa-times fa-lg px-0"
+                        style="cursor: pointer"
+                        onclick="excludefromrole('@Model.rolesIncluded[j].Name',
+                                        '@Model.rolesIncluded[j].Id',
+                                        '@Model._commonUser.Id')">
+                </snap>
+            </div>
+        }
+    </div>
+    }
+    <div class="pb-4"></div>
+    <h4 class="mb-3">Roles to Include In</h4>
+    @for (int i = 0; i < cntMRTI; i++)
+    {
+    <div class="d-flex flex-row justify-content-start px-0">
+        <div style="width: 20%;">@Html.DisplayFor(m => m.rolesToInclude[i].Name)</div>
+        <div style="width: 5%;">
+            <snap class="text-primary fas fa-plus fa-lg px-0"
+                    style="cursor: pointer"
+                    onclick="includetorole('@Model.rolesToInclude[i].Name',
+                                            '@Model.rolesToInclude[i].Id',
+                                            '@Model._commonUser.Id')">
+            </snap>
+        </div>
+        @{ j = ++i;}
+        @if (j < cntMRTI)
+        {
+        <div style="width: 20%;">@Html.DisplayFor(m => m.rolesToInclude[j].Name)</div>
+        <div style="width: 5%;">
+            <snap class="text-primary fas fa-plus fa-lg px-0"
+                    style="cursor: pointer"
+                    onclick="includetorole('@Model.rolesToInclude[j].Name',
+                                            '@Model.rolesToInclude[j].Id',
+                                            '@Model._commonUser.Id')">
+            </snap>
+        </div>
+        }
+    </div>
+    }
+    </div>
+}
+
+<script type="text/javascript">
+    function rolesFormSimpleYes(resTp) {
+        var f = document.forms.namedItem(resTp);
+        f.submit();
+    }
+    function excludefromrole(role, roleId, id) {
+        var f = document.forms.namedItem("rolesForm");
+        f.elements.namedItem("Input.roleToActOn").value = role;
+        f.elements.namedItem("Input.roleIdToActOn").value = roleId;
+        f.elements.namedItem("Input.userId").value = id;
+        f.elements.namedItem("Input.action").value = 'exclude';
+
+        opnModalYNSimple('Do you want to exclude the user from role ' + role + '?', 'rolesForm');
+    }
+    function includetorole(role, roleId, userId) {
+        var f = document.forms.namedItem("rolesForm");
+        f.elements.namedItem("Input.roleToActOn").value = role;
+        f.elements.namedItem("Input.roleIdToActOn").value = roleId;
+        f.elements.namedItem("Input.userId").value = userId;
+        f.elements.namedItem("Input.action").value = 'include';
+
+        opnModalYNSimple('Do you want to include the user to the role '+role+'?', 'rolesForm');
+    }
+</script>
+

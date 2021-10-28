@@ -1,0 +1,66 @@
+﻿@page
+@model ExternalLoginsMdl
+@{
+    ViewData["Title"] = "Manage your external logins";
+    ViewData["ActivePage"] = ManageNavPages.ExternalLogins;
+
+    var id = @Model._commonUser.Id;
+    ViewData["userId"] = id;
+    ViewData["userName"] = @Model._commonUser.UserName;
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+@if (Model.CurrentLogins?.Count > 0)
+{
+    <h4 class="pb-0 mb-0">Registered Logins</h4>
+    <table class="table">
+        <tbody>
+            @foreach (var login in Model.CurrentLogins)
+            {
+                <tr>
+                    <td>@login.ProviderDisplayName</td>
+                    <td>
+                        @if (Model.ShowRemoveButton)
+                        {
+                            <form id="remove-login" asp-page-handler="RemoveLogin" method="post"
+                                  asp-route-id="@ViewData["userId"]">
+                                <div>
+                                    <input asp-for="@login.LoginProvider" name="LoginProvider" type="hidden" />
+                                    <input asp-for="@login.ProviderKey" name="ProviderKey" type="hidden" />
+                                    <button type="submit" class="btn btn-primary"
+                                            title="Remove this @login.ProviderDisplayName login from the account">
+                                        Remove
+                                    </button>
+                                </div>
+                            </form>
+                        }
+                        else
+                        {
+                            @: &nbsp;
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@if (Model.OtherLogins?.Count > 0)
+{
+    <h4 class="pb-0 mb-0">Another services to log in.</h4>
+    <form id="link-login-form" 
+          asp-page-handler="LinkLogin" asp-route-id="@ViewData["userId"]"
+          method="post"
+          class="px-0 py-1">
+            <div id="socialLoginList">
+                <p>
+                    @foreach (var provider in Model.OtherLogins)
+                    {
+                        <button id="link-login-button" type="submit" class="btn btn-primary" 
+                                name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                    @provider.DisplayName
+                        </button>
+                    }
+                </p>
+            </div>
+    </form>
+}

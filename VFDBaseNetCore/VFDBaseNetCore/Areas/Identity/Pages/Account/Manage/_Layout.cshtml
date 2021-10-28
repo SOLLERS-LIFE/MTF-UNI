@@ -1,0 +1,23 @@
+﻿@{
+    // Layout = "/Areas/Identity/Pages/_Layout.cshtml"; // VFD
+    Layout = "/Pages/Shared/_Layout.cshtml"; // VFD to provide the same layout to security related and common pages
+
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var baseColor = MTF.GlobalParameters._baseColor;
+}
+
+<div class="container pt-1">
+    <h4 class="pb-2">Change account settings (@ViewData["userName"])</h4>
+    <div class="row">
+        <div class="col-sm-3">
+            <partial name="_ManageNav" />
+        </div>
+        <div class="col-sm-9">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

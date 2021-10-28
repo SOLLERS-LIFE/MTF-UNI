@@ -1,0 +1,56 @@
+﻿@page
+@model MTF.Areas.Logging.Pages.ClaimsLogEntryModel
+@{
+    ViewData["Title"] = Model.PageName;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+}
+
+@using (Html.BeginForm("EventLogEntry", "", FormMethod.Post,
+                   new { id = "pageForm", name = "pageForm" }
+                  )
+)
+{
+    @Html.HiddenFor(m => m.input.ID)
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />    
+<div class="container-fluid mt-3 px-5">
+    <div class="row mb-1">
+        <div class="col-3">
+            <span class="font-weight-bold">@Html.DisplayNameFor(m => m.input.logged): </span><span class="text-break">@Html.DisplayFor(m => m.input.logged)</span>
+        </div>
+        <div class="col">
+            <span class="font-weight-bold">@Html.DisplayNameFor(m => m.input.author): </span><span class="text-break">@Html.DisplayFor(m => m.input.author)</span>
+        </div>
+    </div>
+    <div class="row mb-1">
+        <div class="col-3">
+            <span class="font-weight-bold">@Html.DisplayNameFor(m => m.input.viewed): </span><span class="text-break">@Html.DisplayFor(m => m.input.viewed)</span>
+        </div>
+        <div class="col">
+            <span class="font-weight-bold">@Html.DisplayNameFor(m => m.input.viewedby): </span><span class="text-break">@Html.DisplayFor(m => m.input.viewedby)</span>
+        </div>
+    </div>
+    <div class="row my-1">
+        <div class="col-12">
+            <hr class="text-primary bg-primary" style="height:5px;border:none;" />
+        </div>
+    </div>
+    <div class="row my-1">
+        <div class="col-12">
+            <span class="font-weight-bold">@Html.DisplayNameFor(m => m.input.claimText): </span><span class="text-break">@Html.DisplayFor(m => m.input.claimText)</span>
+        </div>
+    </div>
+</div>
+}
+
+@{
+    ViewData["data-pageIdent"] = Model.PageName + Model.input.prevID;
+    ViewData["data-avlMsg"] = "The Claims Log Entry you are requested for editing is available now";
+}
+    <script type="text/javascript">
+    function userDocumentIsOccuped(pageIdent) {
+        window.alert("The Claims Log Entry you are requested for editing is occuped now. You receive a notification when it be available.");
+        document.getElementById("courtine").classList.toggle("opened");
+    }
+    </script>
+<partial name="~/Pages/Shared/_pageActualization.cshtml"/>

@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mtf-runner-tests
+  name: mtf-runner-tests
+spec:
+  type: NodePort
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
+      nodePort: 31990
+  selector:
+    app: mtf-runner-tests
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mtf-runner-tests
+  labels:
+    name: mtf-runner-tests
+    app: mtf-runner-tests
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mtf-runner-tests
+  template:
+    metadata:
+      labels:
+        app: mtf-runner-tests
+    spec:
+      containers:
+      - name: mtf-runner
+        image: bosun-01.sollers-sftdev.lab:5000/mtf-runner:latest
+        imagePullPolicy: IfNotPresent
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "cp -R /stores/exchange/MTFPublished /var/run/MTFPublished; cd /var/run/MTFPublished; ./MTFramework;" ]
+        #args: [ "while true; do sleep 5; done;" ]
+        volumeMounts:
+        - name: exchange
+          mountPath: /stores/exchange
+          readOnly: true
+        - name: common-vol
+          mountPath: /stores/common-vol
+          readOnly: false
+        - name: webcerts
+          mountPath: /stores/webcerts
+          readOnly: false
+      volumes:
+      - name: exchange
+        persistentVolumeClaim:
+          claimName: exchange-claim
+      - name: common-vol
+        persistentVolumeClaim:
+          claimName: common-pvc
+      - name: webcerts
+        persistentVolumeClaim:
+          claimName: webcerts-store

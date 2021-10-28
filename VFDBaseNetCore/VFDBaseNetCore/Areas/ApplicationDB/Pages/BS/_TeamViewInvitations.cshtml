@@ -1,0 +1,23 @@
+﻿@using MTF.Areas.ApplicationDB.Pages.BS.Models
+@model List<bs_invite_traps_v>
+
+<div class="container-fluid mt-2">
+    @{ var sz = Model.Count(); }
+    @for (int i = 0; i < sz; i++)
+    {
+        <div class="h-100 d-inline-flex flex-row align-items-start mb-1 me-4">
+            <div class="flex-fill ms-auto">
+                <a class="fas fa-user fa-lg"></a>
+                <a class="">@Html.DisplayFor(m => m[i].user_email)</a>
+                <span class="">@Html.DisplayFor(m => m[i]._stateVal)</span>
+                <span class="">@Html.DisplayFor(m => m[i].change_logged)</span>
+                <div class="d-inline-flex align-middle text-center me-1">
+                    <a class="fas fa-times fa-lg"
+                       style="cursor: pointer;"
+                       onclick="cancelInvite('@Model[i].Id', '@Model[i].user_email')">
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

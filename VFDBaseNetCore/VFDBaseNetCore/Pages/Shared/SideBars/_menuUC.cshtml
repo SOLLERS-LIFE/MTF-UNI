@@ -1,0 +1,26 @@
+﻿@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+}
+
+@if (_lconsts.isSU)
+{
+    @if (GlobalParameters._isDevelopment)
+    {
+        <ul class="sidenav-menu">
+            <li class="sidenav-item">
+                <a class="sidenav-link active ps-2">
+                    <i class="fas fa-grin fa-fw me-2 "></i>
+                    <span class="">Tests</span>
+                </a>
+                <ul class="sidenav-collapse show">
+                    <li class="sidenav-item">
+                        <a asp-page="/LookingForward/asideOpsTests"
+                           class="sidenav-link active ps-4">
+                            Aside Ops Facility
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    }
+}

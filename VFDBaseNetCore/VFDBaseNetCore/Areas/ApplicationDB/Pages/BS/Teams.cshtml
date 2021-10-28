@@ -1,0 +1,127 @@
+﻿@page
+@model MTF.Areas.ApplicationDB.BS.TeamsModel
+@{
+    var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var baseColor = MTF.GlobalParameters._baseColor;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+
+    var teamAlias = MTF.GlobalParameters.TeamNameAlias;
+    var teamsAlias = MTF.GlobalParameters.TeamsNameAlias;
+    var markAlias = MTF.GlobalParameters.MarkNameAlias;
+    var marksAlias = MTF.GlobalParameters.MarksNameAlias;
+    var bsAlias = MTF.GlobalParameters.BusinessStructureAlias;
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+@using (Html.BeginForm(pageName, "", FormMethod.Post,
+              new { id = "opr01Form", name = "opr01Form" }
+              )
+  )
+{
+    <input type="hidden" asp-for="@Model._operation._op"
+           name="_op" , id="_op" />
+    <input type="hidden" asp-for="@Model._operation._src"
+           name="_src" , id="_src" />
+    <input type="hidden" asp-for="@Model._operation._prm"
+           name="_prm" , id="_prm" />
+    <input type="hidden" asp-for="@Model._operation._prm2"
+           name="_prm2" , id="_prm2" />
+}
+<div class="container-fluid mt-2">
+    <div class="row">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="ApplicationDB" asp-page="/BS/index">@bsAlias</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><strong>My @teamsAlias</strong></li>
+            </ol>
+        </nav>
+    </div>
+    @{ var sz = Model.TeamsList.Count(); }
+    @for (int i = 0; i < sz; i++)
+    {
+        <div class="h-100 d-inline-flex flex-row align-items-start mb-1">
+            <div class="flex-fill ms-auto">
+                <span class="me-1">
+                    @Html.TextBoxFor(m => m.TeamsList[i].name,
+                            new { onchange = $"updateTeamName('{Model.TeamsList[i].Id}',{i},'{Model.TeamsList[i].name}')" })
+                </span>
+                <div class="d-inline-flex align-middle text-center me-1">
+                    <a asp-page="./TeamView"
+                       asp-route-id="@Model.TeamsList[i].Id">
+                        <span class="far fa-list-alt fa-lg mx-0 px-0 me-1"></span>
+                    </a>
+                    <span class="far fa-trash-alt fa-lg mx-0 px-0"
+                          style="cursor: pointer; position: relative; bottom: -0.2rem"
+                          onclick="deleteTeam('@Model.TeamsList[i].Id','@Model.TeamsList[i].name')">
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<script type="text/javascript">
+    function reqTeamName() {
+        opnModalYN("@bsAlias - @teamsAlias",
+            "Do you want to create new @teamAlias?",
+            "",
+            "reqTeamName",
+            1,
+            "Enter new @teamAlias name");
+    };
+    function reqTeamNameYes(resType, resVal) {
+        var f = document.forms.namedItem("opr01Form");
+        f.elements.namedItem("_op").value = "addTeam";
+        f.elements.namedItem("_prm").value = resVal;
+        f.submit();
+        return;
+    };
+
+    function deleteTeam(teamId, teamName) {
+        var f = document.forms.namedItem("opr01Form");
+        f.elements.namedItem("_prm").value = teamId;
+        opnModalYNSimple(
+            "Do you really want to delete @teamAlias " + teamName + "?",
+            "deleteTeam",
+            "@bsAlias - @teamsAlias"
+        );
+    };
+    function deleteTeamSimpleYes() {
+        var f = document.forms.namedItem("opr01Form");
+        f.elements.namedItem("_op").value = "deleteTeam";
+        f.submit();
+        return;
+    };
+
+    var oldteamname = "";
+    var teamindex = 0;
+    function updateTeamName(rn, sn, oldn) {
+        var f = document.forms.namedItem("opr01Form");
+        f.elements.namedItem("_op").value = "renameTeam";
+        f.elements.namedItem("_prm").value = rn;
+        teamindex = sn;
+        oldteamname = oldn;
+        var nn = document.getElementsByName("TeamsList[" + sn + "].name")[0].value;
+        f.elements.namedItem("_prm2").value = nn;
+        opnModalYNSimple(
+            "Do you want to rename the @teamAlias " + oldn + " as " + nn + "?",
+            "renameTeam",
+            "@bsAlias - @teamsAlias"
+        );
+    };
+    function renameTeamSimpleYes(str) {
+        var f = document.forms.namedItem("opr01Form");
+        f.submit();
+    }
+    function renameTeamSimpleNo(str) {
+        var f = document.forms.namedItem("opr01Form");
+        if (f.elements.namedItem("_op").value == "renameTeam") {
+            document.getElementsByName("TeamsList[" + teamindex + "].name")[0].value = oldteamname;
+        }
+    }
+
+</script>
+

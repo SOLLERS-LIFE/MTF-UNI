@@ -1,0 +1,10 @@
+﻿@using MTF
+@{ 
+    int tOut = GlobalParameters.ClientPageReloadInterval != 0 ? GlobalParameters.ClientPageReloadInterval : (15 * 60 * 1000);
+}
+
+<script id="pageActivation"
+        data-reloadTimeout="@tOut"
+        src="~/js/page-activation.js"
+        asp-append-version="true">
+</script>

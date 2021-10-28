@@ -1,0 +1,67 @@
+﻿@* 
+*@
+@{
+}
+<div class="ms-1">
+    <div id="dnldSpinner" class="d-inline-flex justify-content-start align-items-center d-none">
+        <div class="spinner-grow text-info me-2" style="width: 3em; height: 2em;" role="status"></div>
+        <strong class="text-info">We are preparing your report...</strong>
+    </div>
+    <div id="statusAsideOp" class="mb-2"></div>
+    <iframe id="if_downloader" title="downloader" class="d-none" src=""></iframe>
+</div>
+@Html.AntiForgeryToken()
+<script type="text/javascript">
+    function sbmReqFileAsync(oper, prm, tp, dn, pageFileName) {
+        document.getElementById("dnldSpinner").classList.toggle("d-none");
+        document.getElementById("statusAsideOp").innerHTML = "";
+
+        formData = new FormData();
+        formData.append("op", oper);
+        formData.append("prm", prm)
+
+        var request = new XMLHttpRequest();
+        request.open("POST", pageFileName + "?handler=AsideOpsMngr", true);
+        request.setRequestHeader("X-XSRF-TOKEN", document.getElementsByName("__RequestVerificationToken")[0].value);
+        request.onreadystatechange = function (e) {
+            if (this.readyState === 4) {
+                if (this.status == 200) {
+                };
+            };
+        };
+
+        request.addEventListener("load", function (event) {
+            const rsp = JSON.parse(event.target.responseText);
+            if (rsp.status !== "success") {
+                document.getElementById("statusAsideOp").innerHTML = rsp.status;
+            };
+            getFromCacheNEW(event.target.responseText, tp, dn);
+            document.getElementById("dnldSpinner").classList.toggle("d-none");
+        });
+        request.addEventListener("error", function (e) {
+            document.getElementById("statusAsideOp").innerHTML = "Report Failed";
+            document.getElementById("dnldSpinner").classList.toggle("d-none");
+        }, false);
+        request.addEventListener("abort", function (e) {
+            document.getElementById("statusAsideOp").innerHTML = "Report Aborted";
+            document.getElementById("dnldSpinner").classList.toggle("d-none");
+        }, false);
+        request.addEventListener("timeout", function (e) {
+            document.getElementById("statusAsideOp").innerHTML = "Timeout Expired";
+            document.getElementById("dnldSpinner").classList.toggle("d-none");
+        }, false);
+
+        request.timeout = 10*60*1000;
+        request.send(formData);
+
+        return false;
+    };
+    function getFromCacheNEW(rt, tp, dn) {
+        const redk = JSON.parse(rt);
+        if (redk.status === "success") {
+            const path = "/Shared/SideOps/asideOps?handler=Baby&op=" + "getFromCache" + "&pf=" + redk.redisKey
+                + "&tp=" + tp + "&dn=" + dn;
+            document.getElementById("if_downloader").src = path;
+        };
+    };
+</script>

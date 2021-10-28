@@ -1,0 +1,151 @@
+﻿@page
+@model MTF.Areas.ApplicationDB.BS.MarkerViewModel
+@{
+    var pageName = ViewContext.RouteData.Values["page"].ToString();
+    ViewData["Title"] = Model.PageName;
+    var NavHeight = MTF.GlobalParameters.NavbarHeight;
+    var baseColor = MTF.GlobalParameters._baseColor;
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var markAlias = MTF.GlobalParameters.MarkNameAlias;
+    var marksAlias = MTF.GlobalParameters.MarksNameAlias;
+    var bsAlias = MTF.GlobalParameters.BusinessStructureAlias;
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+
+    int cntMRTI = Model._teamUsersDisallowed.Count();
+    int cntRI = Model._teamUsersWithAccess.Count();
+    int j = 0;
+}
+
+<partial name="~/Pages/Shared/_statusMessage.cshtml" model="@Model._statusMessage" />
+@using (Html.BeginForm(pageName, "", FormMethod.Post,
+                 new { id = "oprMarkViewForm", name = "oprMarkViewForm" }
+                 )
+     )
+{
+    <input type="hidden" asp-for="@Model._operation._op"
+           name="_op" , id="_op" />
+    <input type="hidden" asp-for="@Model._operation._src"
+           name="_src" , id="_src" />
+    <input type="hidden" asp-for="@Model._operation._prm"
+           name="_prm" , id="_prm" />
+    <input type="hidden" asp-for="@Model._operation._prm2"
+           name="_prm2" , id="_prm2" />
+    <input type="hidden" asp-for="@Model._operation._prm3"
+           name="_prm3" , id="_prm3" />
+    <input type="hidden" asp-for="@Model._operation._prm4"
+           name="_prm4" , id="_prm4" />
+}
+<div class="container-fluid">
+    <div class="row">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-area="ApplicationDB" asp-page="/BS/index">@bsAlias</a></li>
+                <li class="breadcrumb-item"><a asp-area="ApplicationDB" asp-page="/BS/Markers">My @marksAlias</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><strong>@Model._marker.mark_name</strong></li>
+            </ol>
+        </nav>
+    </div>
+    <h4 class="mb-3">Members with access rights</h4>
+    @for (int i = 0; i < cntRI; i++)
+    {
+        <div class="d-flex flex-row justify-content-start px-0">
+            <div style="width: 35%;">@Html.DisplayFor(m => m._teamUsersWithAccess[i].email)</div>
+            <div style="width: 5%;">
+                <snap class="text-primary fas fa-times fa-lg px-0"
+                      style="cursor: pointer"
+                      onclick="excludefromMarker('@Model._teamUsersWithAccess[i].email',
+                                                '@Model._teamUsersWithAccess[i].id_user',
+                                                '@Model._teamUsersWithAccess[i].id_bst',
+                                                '@Model._marker.Id')">
+                </snap>
+            </div>
+            @{ j = ++i; }
+            @if (j < cntRI)
+            {
+                <div style="width: 35%;">@Html.DisplayFor(m => m._teamUsersWithAccess[i].email)</div>
+                <div style="width: 5%;">
+                    <snap class="text-primary fas fa-times fa-lg px-0"
+                          style="cursor: pointer"
+                          onclick="excludefromMarker('@Model._teamUsersWithAccess[i].email',
+                                                    '@Model._teamUsersWithAccess[i].id_user',
+                                                    '@Model._teamUsersWithAccess[i].id_bst',
+                                                    '@Model._marker.Id')">
+                    </snap>
+                </div>
+            }
+        </div>
+        <div class="d-flex flex-row my-0 py-0">
+            <div class="col-12">
+                <hr class="my-0 py-0 text-primary bg-primary" style="height:2px;border:none;" />
+            </div>
+        </div>
+    }
+    <div class="pb-4"></div>
+    <h4 class="mb-3">Members without access rights</h4>
+    @{ j = 0; }
+    @for (int i = 0; i < cntMRTI; i++)
+    {
+        <div class="d-flex flex-row justify-content-start px-0">
+            <div style="width: 35%;">@Html.DisplayFor(m => m._teamUsersDisallowed[i].email)</div>
+            <div style="width: 5%;">
+                <snap class="text-primary fas fa-plus fa-lg px-0"
+                      style="cursor: pointer"
+                      onclick="includetoMarker('@Model._teamUsersDisallowed[i].email',
+                                                '@Model._teamUsersDisallowed[i].id_user',
+                                                '@Model._teamUsersDisallowed[i].id_bst',
+                                                '@Model._marker.Id')">
+                </snap>
+            </div>
+            @{ j = ++i;}
+            @if (j < cntMRTI)
+            {
+                <div style="width: 35%;">@Html.DisplayFor(m => m._teamUsersDisallowed[j].email)</div>
+                <div style="width: 5%;">
+                    <snap class="text-primary fas fa-plus fa-lg px-0"
+                          style="cursor: pointer"
+                          onclick="includetoMarker('@Model._teamUsersDisallowed[i].email',
+                                                    '@Model._teamUsersDisallowed[i].id_user',
+                                                    '@Model._teamUsersDisallowed[i].id_bst',
+                                                    '@Model._marker.Id')">
+                    </snap>
+                </div>
+            }
+        </div>
+        <div class="d-flex flex-row my-0 py-0">
+            <div class="col-12">
+                <hr class="my-0 py-0 text-primary bg-primary" style="height:2px;border:none;" />
+            </div>
+        </div>
+    }
+</div>
+
+<script type="text/javascript">
+    function oprMarkViewFormSimpleYes(resTp) {
+        var f = document.forms.namedItem(resTp);
+        f.submit();
+    }
+
+    function includetoMarker(email, id_user, id_bst, id_mark) {
+        var f = document.forms.namedItem("oprMarkViewForm");
+        f.elements.namedItem("_op").value = "include";
+        f.elements.namedItem("_src").value = id_mark;
+        f.elements.namedItem("_prm").value = email;
+        f.elements.namedItem("_prm2").value = id_user;
+        f.elements.namedItem("_prm3").value = id_bst;
+        f.elements.namedItem("_prm4").value = id_mark;
+
+        opnModalYNSimple('Do you want to allow a member access @markAlias ' + '@Model._marker.mark_name' + '?', 'oprMarkViewForm');
+    }
+
+    function excludefromMarker(email, id_user, id_bst, id_mark) {
+        var f = document.forms.namedItem("oprMarkViewForm");
+        f.elements.namedItem("_op").value = "exclude";
+        f.elements.namedItem("_src").value = id_mark;
+        f.elements.namedItem("_prm").value = email;
+        f.elements.namedItem("_prm2").value = id_user;
+        f.elements.namedItem("_prm3").value = id_bst;
+        f.elements.namedItem("_prm4").value = id_mark;
+
+        opnModalYNSimple('Do you want to disallow a member access @markAlias ' + '@Model._marker.mark_name' + '?', 'oprMarkViewForm');
+    }
+</script>

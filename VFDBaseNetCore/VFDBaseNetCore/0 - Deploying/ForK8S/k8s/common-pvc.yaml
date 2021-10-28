@@ -1,0 +1,13 @@
+# pvc for common shared volume for all containers
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: common-pvc
+ annotations:
+   volume.beta.kubernetes.io/storage-class: pvp-nfs
+spec:
+ accessModes:
+  - ReadWriteMany
+ resources:
+   requests:
+     storage: 2Gi

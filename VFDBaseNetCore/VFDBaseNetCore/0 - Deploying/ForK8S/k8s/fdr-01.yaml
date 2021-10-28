@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fedora-pvc-se
+  namespace: sole-probes
+  labels:
+    app: fedora-probe
+  annotations:
+    volume.beta.kubernetes.io/storage-class: safe-space-effective
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fedora-pvc-sh
+  namespace: sole-probes
+  labels:
+    app: fedora-probe
+  annotations:
+    volume.beta.kubernetes.io/storage-class: safe-space-hungry
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: fedora-probe
+  name: fedora-probe
+  namespace: sole-probes
+spec:
+  type: NodePort
+  ports:
+    - name: some-port
+      protocol: TCP
+      port: 555
+      targetPort: 55
+      nodePort: 31955
+  selector:
+    app: fedora-probe
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fedora-probe
+  namespace: sole-probes
+  labels:
+    name: fedora-probe
+    app: fedora-probe
+spec:
+  serviceName: fedora-probe
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fedora-probe
+  updateStrategy:
+    type: OnDelete
+  template:
+    metadata:
+      labels:
+        app: fedora-probe
+    spec:
+      containers:
+      - name: fedora-probe-pod
+        image: fedora:33
+        imagePullPolicy: IfNotPresent
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 604800; done;" ]
+        volumeMounts:
+        - name: fedora-vol-se
+          mountPath: /stores/exchange/se
+          readOnly: false
+        - name: fedora-vol-sh
+          mountPath: /stores/exchange/sh
+          readOnly: false
+      volumes:
+      - name: fedora-vol-se
+        persistentVolumeClaim:
+          claimName: fedora-pvc-se
+      - name: fedora-vol-sh
+        persistentVolumeClaim:
+          claimName: fedora-pvc-sh

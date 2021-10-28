@@ -1,0 +1,73 @@
+# https://kubernetes.io/docs/tutorials/services/source-ip/
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: mtf-production
+  name: mtf-production
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
+      nodePort: 31900
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  selector:
+    app: mtf-production
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mtf-production
+  labels:
+    name: mtf-production
+    app: mtf-production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mtf-production
+  template:
+    metadata:
+      labels:
+        app: mtf-production
+    spec:
+      containers:
+      - name: mtf-production
+        image: bosun-01.sollers-sftdev.lab:5000/mtf-runner:v4.00
+        imagePullPolicy: IfNotPresent
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "cp -R /stores/exchange/MTFPublished/* /var/run/MTFPublished; cd /var/run/MTFPublished; ./MTFramework;" ]
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 500m
+          limits:
+            memory: 8Gi
+            cpu: 2000m
+        volumeMounts:
+        - name: exchange
+          mountPath: /stores/exchange
+          readOnly: true
+        - name: common-vol
+          mountPath: /stores/common-vol
+          readOnly: false
+        - name: webcerts
+          mountPath: /stores/webcerts
+          readOnly: false
+      volumes:
+      - name: exchange
+        persistentVolumeClaim:
+          claimName: exchange-claim
+      - name: common-vol
+        persistentVolumeClaim:
+          claimName: common-pvc
+      - name: webcerts
+        persistentVolumeClaim:
+          claimName: webcerts-store

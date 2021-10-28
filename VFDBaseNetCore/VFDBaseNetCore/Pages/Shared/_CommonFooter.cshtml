@@ -1,0 +1,20 @@
+﻿@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+    var reqcntnt = _lconsts.reqcntnt;
+
+    var NavHeight = _lconsts.NavHeight; // MTF.GlobalParameters.NavbarHeight;
+    var baseColor = _lconsts.baseColor;
+}
+@if (!reqcntnt)
+{
+    <footer class="container-fluid fixed-bottom px-0 mx-0" style="z-index: 2048;">
+        <!-- Copyright -->
+        <div class="container-fluid text-end px-0 mx-0 pe-4"
+             style="background-color: rgba(0, 0, 0, 0.07);"
+             title="@_lconsts.vrs">
+            © 2021 Copyright:
+            <a href="http://www.sollers.com/">sollers Inst.</a> <i class="fas fa-balance-scale"></i> <a asp-area="" asp-page="/Licences">Legal Info</a>
+        </div>
+        <!-- Copyright -->
+    </footer>
+}

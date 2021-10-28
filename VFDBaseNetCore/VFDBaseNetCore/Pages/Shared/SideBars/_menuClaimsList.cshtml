@@ -1,0 +1,92 @@
+﻿@model MTF.Areas.Logging.Pages.ClaimsLogModel
+
+@{
+    var _lconsts = (MTF.Utilities.layoutConsts)ViewData["_lconsts"];
+}
+<div class="form-inline mx-1" name="searchCaption-cln" id="searchCaption-cln">
+    <form class="form-inline mx-1" name="claimsSearch" id="claimsSearch"
+          asp-page="" method="get" onsubmit="return validateSearchCaptionSubmit();">
+        <span class="navbar-text mb-2 fas fa-search fa-lg"
+              style="cursor: pointer" onclick="_submit_searchFilter_cln()">
+        </span>
+        <span class="navbar-text mb-2">From:</span>
+        <select class="select-box mb-2" style="min-width: 100%" aria-label="Search"
+                name="startDate" id="startDate"
+                asp-for="@Model._invariants.StartDate" asp-items="@Model.AvailableStartDates"
+                onchange="_submit_startDate()">
+        </select>
+        <select class="select-box mb-2" style="min-width: 100%" aria-label="Search"
+                name="searchField" id="searchField"
+                asp-for="@Model._invariants.SearchField" asp-items="@Model.AvailableSearchFields"
+                onchange="_submit_searchField_cln()">
+        </select>
+        <input class="select-box mb-2" style="min-width: 100%"
+               type="text" placeholder="Search @Model._invariants.SearchField"
+               name="searchFilter" id="searchFilter"
+               value="@Model._invariants.SearchFilter"
+               onchange="_submit_searchFilter_cln()" />
+    </form>
+</div>
+<ul class="sidenav-menu">
+    <li class="sidenav-item">
+        <a class="sidenav-link active ps-2"
+           onclick="claims_selectOp('selectAllVisible')">
+            <i class="fas fa-lightbulb fa-fw me-2"></i>
+            <span>Select All Visible</span>
+        </a>
+     </li>
+    <li class="sidenav-item">
+        <a class="sidenav-link active ps-2"
+           onclick="claims_selectOp('invertSelection')">
+            <i class="fas fa-check fa-fw me-2"></i>
+            <span>Invert Selection</span>
+        </a>
+    </li>
+    <li class="sidenav-item">
+        <a class="sidenav-link active ps-2"
+           onclick="claims_selectOp('deselectAllVisible')">
+            <i class="far fa-lightbulb fa-fw me-2"></i>
+            <span>Unselect All Visible</span>
+        </a>
+    </li>
+</ul>
+<script type="text/javascript">
+    var ref = "";
+
+    function validateSearchCaptionSubmit() {
+        return false;
+    }
+
+    function _submit_startDate() {
+        ref = '/Logging/ClaimsLog?workFlowId=@Model._invariants.WorkFlowId' +
+              '&pageIndex=1' +
+              '&startDate=' +
+              document.getElementById("startDate").value;
+        window.location.href = ref;
+    };
+
+    function _submit_searchField_cln() {
+        ref = '/Logging/ClaimsLog?workFlowId=@Model._invariants.WorkFlowId' +
+              '&pageIndex=1' +
+              '&searchString=' +
+              '&searchField=' +
+              document.getElementById("searchField").value;
+        window.location.href = ref;
+    };
+
+    function _submit_searchFilter_cln() {
+        var _srch = document.getElementById("searchFilter").value;
+        if (!_srch) { _srch = '%02%03'; };
+        ref = '/Logging/ClaimsLog?workFlowId=@Model._invariants.WorkFlowId' +
+            '&pageIndex=1' +
+            '&searchString=' +
+            _srch;
+        window.location.href = ref;
+    };
+
+    function claims_selectOp(_op) {
+        var f = document.forms.namedItem("ClaimsLogForm");
+        f.elements.namedItem("_op").value = _op;
+        f.submit();
+    };
+</script>
